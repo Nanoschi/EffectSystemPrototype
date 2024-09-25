@@ -109,44 +109,51 @@ class EffectSystem
     {
         if (effect is ValueEffect value_effect)
         {
-            if (basePipelines.TryGetValue(value_effect.property, out var pipelines))
-            {
-                var pipeline = (value_effect.op == EffectOp.Add) ? pipelines.add : pipelines.mul;
-                return pipeline.RemoveEffect(value_effect.id);
-            }
-            else
-            {
-                return false;
-            }
+            return RemoveValueEffect(value_effect.id, value_effect.property, value_effect.op);
         }
         else if (effect is MetaEffect meta_effect)
         {
-            // TODO
+            return RemoveMetaEffect(meta_effect.id);
         }
         return false;
     }
 
     public bool RemoveEffect(long effect_id)
     {
-        bool removed = false;
-        foreach (var pipeline_kv in basePipelines)
+        foreach (var property_kv in basePipelines)
         {
-            removed = pipeline_kv.Value.add.RemoveEffect(effect_id);
-            if (!removed) { pipeline_kv.Value.mul.RemoveEffect(effect_id); }
+            bool removed = RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Add) |
+                           RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Mul);
+            if (removed)
+            {
+                return true;
+            }
         }
+        return RemoveMetaEffect(effect_id);
+    }
 
+    bool RemoveValueEffect(long effect_id, string property, EffectOp op)
+    {
+        if (basePipelines.TryGetValue(property, out var pipelines))
+        {
+            var pipeline = op == EffectOp.Add ? pipelines.add : pipelines.mul;
+            return pipeline.RemoveEffect(effect_id);
+        }
+        return false;
+    }
+
+    bool RemoveMetaEffect(long effect_id)
+    {
         var node = metaEffects.First;
         for (int i = 0; i < metaEffects.Count; i++)
         {
             if (node.Value.id == effect_id)
             {
                 metaEffects.Remove(node);
-                removed = true;
+                return true;
             }
         }
-        removed =  false;
-
-        return removed;
+        return false;
     }
 
     LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> meta_effects)
