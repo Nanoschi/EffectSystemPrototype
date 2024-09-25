@@ -105,29 +105,27 @@ class EffectSystem
         currentTime += delta;
     }
 
-    public void RemoveEffect(Effect effect)
+    public bool RemoveEffect(long effect_id)
     {
-        ValueEffect? value_effect = effect as ValueEffect;
-        if (value_effect != null) 
+        bool removed = false;
+        foreach (var pipeline_kv in basePipelines)
         {
-            foreach (var kv in basePipelines)
-            {
-                bool removed = false;
-                removed = kv.Value.add.effects.Remove(value_effect) |
-                kv.Value.mul.effects.Remove(value_effect);
+            removed = pipeline_kv.Value.add.RemoveEffect(effect_id);
+            if (!removed) { pipeline_kv.Value.mul.RemoveEffect(effect_id); }
+        }
 
-                if (removed && value_effect.duration != 0)
-                {
-                    timedValueNodes = timedValueNodes.Where(p => p.effect_node.Value == value_effect).ToList();
-                }
+        var node = metaEffects.First;
+        for (int i = 0; i < metaEffects.Count; i++)
+        {
+            if (node.Value.id == effect_id)
+            {
+                metaEffects.Remove(node);
+                removed = true;
             }
         }
-        MetaEffect? meta_effect = effect as MetaEffect;
-        if (meta_effect != null)
-        {
-            bool removed = metaEffects.Remove(meta_effect);
-            timedMetaNodes = timedMetaNodes.Where(p => p.effect_node.Value == meta_effect).ToList();
-        }
+        removed =  false;
+
+        return removed;
     }
 
     LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> meta_effects)

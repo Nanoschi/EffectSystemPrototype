@@ -46,7 +46,7 @@ class Program
             system.AddEffect(effect);
         }
         system.IncreaseTime(1.5); // health + 50 Effekt wird entfernt
-        system.RemoveEffect(effects[1]); // health * 20 Effekt wird entfernt
+        system.RemoveEffect(effects[1].id); // health * 20 Effekt wird entfernt
         system.Process();
 
         foreach (var kv in system.processedProperties)

@@ -47,5 +47,19 @@ class Pipeline
     {
         effects.AddLast(effect);
     }
+
+    public bool RemoveEffect(long effect_id)
+    {
+        var node = effects.First;
+        for (int i = 0; i < effects.Count; i++)
+        {
+            if (node.Value.id == effect_id)
+            {
+                effects.Remove(node);
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

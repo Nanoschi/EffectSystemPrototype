@@ -13,12 +13,14 @@ enum EffectOp
 
 abstract class Effect
 {
-    public static long id = 0;
+    public static long maxId = 0;
+    public long id;
     public double duration = 0;
 
     protected Effect()
     {
-        id++;
+        maxId++;
+        id = maxId;
     }
 }
 
