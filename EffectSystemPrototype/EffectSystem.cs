@@ -83,14 +83,13 @@ class EffectSystem
         processedProperties = baseProperties.ToDictionary();
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
-        while (true)
+        LinkedList<MetaEffect> new_meta_effects = metaEffects;
+        do
         {
-            ApplyMetaEffects(out bool newMetaEffect);
-            if (!newMetaEffect)
-            {
-                break;
-            }
+            new_meta_effects =  ApplyMetaEffects(new_meta_effects); // Gibt Meta Effekte zurück, die von Meta effekten erzeugt wurden
         }
+        while (new_meta_effects.Count > 0);
+
 
         foreach (string property in all_properties)
         {
@@ -131,22 +130,25 @@ class EffectSystem
         }
     }
 
-    void ApplyMetaEffects(out bool newMetaEffect)
+    LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> meta_effects)
     {
-        bool _newMetaEffect = false;
+        LinkedList<MetaEffect> new_meta_effects = new();
         foreach (MetaEffect meta_effect in metaEffects)
         {
             Effect[] new_effects = meta_effect.Execute(inputs);
             foreach (Effect effect in new_effects)
             {
-                if (effect is MetaEffect)
+                if (effect is MetaEffect new_meta_effect)
                 {
-                    _newMetaEffect = true;
+                    new_meta_effects.AddLast(new_meta_effect);
                 }
-                AddEffect(effect, processedPipelines);
+                else
+                {
+                    AddEffect(effect, processedPipelines);
+                }
             }
         }
-        newMetaEffect = _newMetaEffect;
+        return new_meta_effects;
     }
 
     void CopyPipelinesToProcessed()
