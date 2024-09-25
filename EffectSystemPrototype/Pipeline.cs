@@ -10,24 +10,23 @@ using System.Threading.Tasks;
 class Pipeline
 {
     EffectOp accumOperator;
-    List<double> values;
+    public LinkedList<ValueEffect> effects = new LinkedList<ValueEffect>();
 
     public Pipeline(EffectOp op) 
     {
         accumOperator = op;
-        values = new List<double>();
     }
 
-    public double Calculate(double start_value)
+    public double Calculate(double start_value, Dictionary<string, object> inputs)
     {
         double result = 0;
         if (accumOperator == EffectOp.Add)
         {
-            result = values.Aggregate(start_value, (accum, x) => x + accum);
+            result = effects.Aggregate(start_value, (accum, x) => x.GetValue(inputs) + accum);
         }
         else if (accumOperator == EffectOp.Mul)
         {
-            result = values.Aggregate(start_value, (accum, x) => x * accum);
+            result = effects.Aggregate(start_value, (accum, x) => x.GetValue(inputs) * accum);
         }
 
         return result;
@@ -36,17 +35,17 @@ class Pipeline
     public Pipeline Copy()
     {
         Pipeline copy = new(accumOperator);
-        foreach (double value in values)
+        foreach (ValueEffect effect in effects)
         {
-            copy.values.Add(value);
+            copy.effects.AddLast(effect);
         }
 
         return copy;
     }
 
-    public void AddValue(double value)
+    public void AddEffect(ValueEffect effect)
     {
-        values.Add(value);
+        effects.AddLast(effect);
     }
 }
 

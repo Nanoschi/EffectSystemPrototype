@@ -13,6 +13,13 @@ enum EffectOp
 
 abstract class Effect
 {
+    public static long id = 0;
+    public double duration = 0;
+
+    protected Effect()
+    {
+        id++;
+    }
 }
 
 // Effekt, der eine Zahl liefert
@@ -35,9 +42,10 @@ abstract class ValueEffect : Effect
 class ConstantEffect : ValueEffect
 {
     public double value;
-    public ConstantEffect(string property, double value, EffectOp op) : base(property, op)
+    public ConstantEffect(string property, double value, EffectOp op, double duration = 0) : base(property, op)
     {
         this.value = value;
+        this.duration = duration;
     }
 
     public override double GetValue(Dictionary<string, object> inputs)
@@ -50,9 +58,9 @@ class ConstantEffect : ValueEffect
 class InputEffect : ValueEffect
 {
     public Func<Dictionary<string, object>, double> effectFunction;
-    public InputEffect(string property, Func<Dictionary<string, object>, double> function, EffectOp op) : base(property, op)
+    public InputEffect(string property, Func<Dictionary<string, object>, double> function, EffectOp op, double duration = 0) : base(property, op)
     {
-        new int();
+        this.duration = duration;
         this.effectFunction = function;
     }
 
@@ -67,8 +75,9 @@ class MetaEffect : Effect
 {
     public Func<Dictionary<string, object>, Effect[]> metaFunction;
 
-    public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction)
+    public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction, double duration = 0)
     {
+        this.duration = duration;
         this.metaFunction = metaFunction;
     }
 

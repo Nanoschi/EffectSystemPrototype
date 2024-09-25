@@ -34,7 +34,7 @@ class Program
 
         Effect[] effects = // Alle aktiven Effekte
         {
-        new ConstantEffect("health", 50, EffectOp.Add),
+        new ConstantEffect("health", 50, EffectOp.Add, 1),
         new ConstantEffect("health", 2, EffectOp.Mul),
         new ConstantEffect("mana", 2, EffectOp.Mul),
         new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
@@ -45,6 +45,8 @@ class Program
         {
             system.AddEffect(effect);
         }
+        system.IncreaseTime(1.5); // health + 50 Effekt wird entfernt
+        system.RemoveEffect(effects[1]); // health * 20 Effekt wird entfernt
         system.Process();
 
         foreach (var kv in system.processedProperties)
