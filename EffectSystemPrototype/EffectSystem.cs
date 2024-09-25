@@ -105,6 +105,27 @@ class EffectSystem
         currentTime += delta;
     }
 
+    public bool RemoveEffect(Effect effect)
+    {
+        if (effect is ValueEffect value_effect)
+        {
+            if (basePipelines.TryGetValue(value_effect.property, out var pipelines))
+            {
+                var pipeline = (value_effect.op == EffectOp.Add) ? pipelines.add : pipelines.mul;
+                return pipeline.RemoveEffect(value_effect.id);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (effect is MetaEffect meta_effect)
+        {
+            // TODO
+        }
+        return false;
+    }
+
     public bool RemoveEffect(long effect_id)
     {
         bool removed = false;
