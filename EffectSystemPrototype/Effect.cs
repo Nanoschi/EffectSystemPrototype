@@ -41,7 +41,7 @@ public abstract class ValueEffect : Effect
 }
 
 // Effekt, der eine feste Zahl liefert
-class ConstantEffect : ValueEffect
+public class ConstantEffect : ValueEffect
 {
     public double value;
     public ConstantEffect(string property, double value, EffectOp op, double duration = 0) : base(property, op)

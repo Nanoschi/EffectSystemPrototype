@@ -40,25 +40,24 @@ public class EffectSystem
 
     void AddEffect(Effect effect, Dictionary<string, (Pipeline add, Pipeline mul)> pipelines)
     {
-        var value_effect = effect as ValueEffect;
-        if (value_effect != null)
+        if (effect is ValueEffect valueEffect)
         {
-            if (value_effect.op == EffectOp.Add)
+            if (valueEffect.op == EffectOp.Add)
             {
-                pipelines[value_effect.property].add.AddEffect(value_effect);
-                TryAddValueTimer(pipelines[value_effect.property].add.effects.Last, pipelines[value_effect.property].add);
+                pipelines[valueEffect.property].add.AddEffect(valueEffect);
+                TryAddValueTimer(pipelines[valueEffect.property].add.effects.Last, pipelines[valueEffect.property].add);
 
             }
-            else if (value_effect.op == EffectOp.Mul)
+            else if (valueEffect.op == EffectOp.Mul)
             {
-                pipelines[value_effect.property].mul.AddEffect(value_effect);
-                TryAddValueTimer(pipelines[value_effect.property].mul.effects.Last, pipelines[value_effect.property].mul);
+                pipelines[valueEffect.property].mul.AddEffect(valueEffect);
+                TryAddValueTimer(pipelines[valueEffect.property].mul.effects.Last, pipelines[valueEffect.property].mul);
             }
         }
-        var meta_effect = effect as MetaEffect;
-        if (meta_effect != null)
+
+        if (effect is MetaEffect metaEffect)
         {
-            metaEffects.AddLast(meta_effect);
+            metaEffects.AddLast(metaEffect);
             TryAddMetaTimer(metaEffects.Last);
         }
     }
@@ -122,7 +121,7 @@ public class EffectSystem
     {
         foreach (var property_kv in basePipelines)
         {
-            bool removed = RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Add) |
+            bool removed = RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Add) ||
                            RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Mul);
             if (removed)
             {
