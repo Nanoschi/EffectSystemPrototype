@@ -28,11 +28,10 @@ namespace UnitTests
             var effect = new ConstantEffect("health", 50, EffectOp.Add, 1);
             
             system.AddEffect(effect);
-            system.basePipelines.Count.Should().Be(1);
+            system.basePipelines["health"].add.effects.Count.Should().Be(1);
 
             system.RemoveEffect(effect);
-            //Todo: Was ändert sich da wenn man einen Effekt entfernt?
-            system.basePipelines.Count.Should().Be(0);
+            system.basePipelines["health"].add.effects.Count.Should().Be(0);
         }
     }
 }
