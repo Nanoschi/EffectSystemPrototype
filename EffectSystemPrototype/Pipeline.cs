@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 // Speichert alle Werte, die für ein bestimmtes Property addiert und multipliziert werden müssen
 // (Effekt wir nicht gespeichert, nur sein Wert)
-class Pipeline
+public class Pipeline
 {
     EffectOp accumOperator;
     public LinkedList<ValueEffect> effects = new LinkedList<ValueEffect>();

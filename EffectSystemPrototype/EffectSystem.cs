@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 
 
-class EffectSystem
+public class EffectSystem
 {
     public Dictionary<string, double> baseProperties = new(); // Basiswerte
     public Dictionary<string, double> processedProperties = new(); // Endwerte

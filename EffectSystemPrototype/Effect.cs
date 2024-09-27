@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-enum EffectOp
+public enum EffectOp
 {
     Add,
     Mul
 }
 
 
-abstract class Effect
+public abstract class Effect
 {
     public static long maxId = 0;
     public long id;
@@ -25,7 +25,7 @@ abstract class Effect
 }
 
 // Effekt, der eine Zahl liefert
-abstract class ValueEffect : Effect
+public abstract class ValueEffect : Effect
 {
     public string property;
     public EffectOp op;
@@ -73,7 +73,7 @@ class InputEffect : ValueEffect
 }
 
 // Effekt, der andere Effekte erzeugt
-class MetaEffect : Effect
+public class MetaEffect : Effect
 {
     public Func<Dictionary<string, object>, Effect[]> metaFunction;
 
