@@ -13,27 +13,27 @@ public enum EffectOp
 
 public abstract class Effect
 {
-    public static long maxId = 0;
-    public long id;
-    public double duration = 0;
+    public static long MaxId = 0;
+    public long Id;
+    public double Duration = 0;
 
     protected Effect()
     {
-        maxId++;
-        id = maxId;
+        MaxId++;
+        Id = MaxId;
     }
 }
 
 // Effekt, der eine Zahl liefert
 public abstract class ValueEffect : Effect
 {
-    public string property;
-    public EffectOp op;
+    public string Property;
+    public EffectOp Op;
 
     public ValueEffect(string property, EffectOp op)
     {
-        this.property = property;
-        this.op = op;
+        this.Property = property;
+        this.Op = op;
     }
 
     public abstract double GetValue(Dictionary<string, object> inputs);
@@ -43,16 +43,16 @@ public abstract class ValueEffect : Effect
 // Effekt, der eine feste Zahl liefert
 public class ConstantEffect : ValueEffect
 {
-    public double value;
+    public double Value;
     public ConstantEffect(string property, double value, EffectOp op, double duration = 0) : base(property, op)
     {
-        this.value = value;
-        this.duration = duration;
+        this.Value = value;
+        this.Duration = duration;
     }
 
     public override double GetValue(Dictionary<string, object> inputs)
     {
-        return value;
+        return Value;
     }
 }
 
@@ -62,7 +62,7 @@ class InputEffect : ValueEffect
     public Func<Dictionary<string, object>, double> effectFunction;
     public InputEffect(string property, Func<Dictionary<string, object>, double> function, EffectOp op, double duration = 0) : base(property, op)
     {
-        this.duration = duration;
+        this.Duration = duration;
         this.effectFunction = function;
     }
 
@@ -79,7 +79,7 @@ public class MetaEffect : Effect
 
     public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction, double duration = 0)
     {
-        this.duration = duration;
+        this.Duration = duration;
         this.metaFunction = metaFunction;
     }
 

@@ -1,76 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-
-
-public class EffectSystem
+﻿public class EffectSystem
 {
-    public Dictionary<string, double> baseProperties = new(); // Basiswerte
-    public Dictionary<string, double> processedProperties = new(); // Endwerte
-    public Dictionary<string, (Pipeline add, Pipeline mul)> basePipelines = new(); // Basis Zahleneffekte
-    public Dictionary<string, (Pipeline add, Pipeline mul)> processedPipelines = new(); // End Zahleneffekte
-    public LinkedList<MetaEffect> metaEffects = new(); // Effekte, die Effekte erzeugen
-    public Dictionary<string, object> inputs = new();
+    public Dictionary<string, double> BaseProperties = new(); // Basiswerte
+    public Dictionary<string, double> ProcessedProperties = new(); // Endwerte
+    public Dictionary<string, (Pipeline add, Pipeline mul)> BasePipelines = new(); // Basis Zahleneffekte
+    public Dictionary<string, (Pipeline add, Pipeline mul)> ProcessedPipelines = new(); // End Zahleneffekte
+    public LinkedList<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
+    public Dictionary<string, object> Inputs = new();
 
-    public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> timedValueNodes = new();
-    public List<(LinkedListNode<MetaEffect> effect_node, double end_time)> timedMetaNodes = new();
+    public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> TimedValueNodes = new();
+    public List<(LinkedListNode<MetaEffect> effect_node, double end_time)> TimedMetaNodes = new();
 
-    public double currentTime = 0;
+    public double CurrentTime = 0;
 
 
     public void AddProperty(string name, double startValue = 0)
     {
-        basePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
-        baseProperties.Add(name, startValue);
+        BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
+        BaseProperties.Add(name, startValue);
     }
 
     public void RemoveProperty(string name)
     {
-        baseProperties.Remove(name);
-        basePipelines.Remove(name);
+        BaseProperties.Remove(name);
+        BasePipelines.Remove(name);
     }
 
     public void AddEffect(Effect effect, double duration = 0)
     {
-        AddEffect(effect, basePipelines);
+        AddEffect(effect, BasePipelines);
     }
 
     void AddEffect(Effect effect, Dictionary<string, (Pipeline add, Pipeline mul)> pipelines)
     {
         if (effect is ValueEffect valueEffect)
         {
-            if (valueEffect.op == EffectOp.Add)
+            if (valueEffect.Op == EffectOp.Add)
             {
-                pipelines[valueEffect.property].add.AddEffect(valueEffect);
-                TryAddValueTimer(pipelines[valueEffect.property].add.effects.Last, pipelines[valueEffect.property].add);
+                pipelines[valueEffect.Property].add.AddEffect(valueEffect);
+                TryAddValueTimer(pipelines[valueEffect.Property].add.Effects.Last, pipelines[valueEffect.Property].add);
 
             }
-            else if (valueEffect.op == EffectOp.Mul)
+            else if (valueEffect.Op == EffectOp.Mul)
             {
-                pipelines[valueEffect.property].mul.AddEffect(valueEffect);
-                TryAddValueTimer(pipelines[valueEffect.property].mul.effects.Last, pipelines[valueEffect.property].mul);
+                pipelines[valueEffect.Property].mul.AddEffect(valueEffect);
+                TryAddValueTimer(pipelines[valueEffect.Property].mul.Effects.Last, pipelines[valueEffect.Property].mul);
             }
         }
 
         if (effect is MetaEffect metaEffect)
         {
-            metaEffects.AddLast(metaEffect);
-            TryAddMetaTimer(metaEffects.Last);
+            MetaEffects.AddLast(metaEffect);
+            TryAddMetaTimer(MetaEffects.Last);
         }
     }
 
     public void SetInput(string name, object value)
     {
-        if (!inputs.ContainsKey(name))
+        if (!Inputs.ContainsKey(name))
         {
-            inputs.Add(name, value);
+            Inputs.Add(name, value);
         }
         else
         {
-            inputs[name] = value;
+            Inputs[name] = value;
         }
 
     }
@@ -78,62 +70,62 @@ public class EffectSystem
     public void Process()
     {
         RemoveTimedOutEffects();
-        var all_properties = baseProperties.Keys.ToArray();
-        processedProperties = baseProperties.ToDictionary();
+        var all_properties = BaseProperties.Keys.ToArray();
+        ProcessedProperties = BaseProperties.ToDictionary();
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
-        LinkedList<MetaEffect> new_meta_effects = metaEffects;
+        LinkedList<MetaEffect> newMetaEffects = MetaEffects;
         do
         {
-            new_meta_effects =  ApplyMetaEffects(new_meta_effects); // Gibt Meta Effekte zurück, die von Meta effekten erzeugt wurden
+            newMetaEffects =  ApplyMetaEffects(newMetaEffects); // Gibt Meta Effekte zurück, die von Meta effekten erzeugt wurden
         }
-        while (new_meta_effects.Count > 0);
+        while (newMetaEffects.Count > 0);
 
 
         foreach (string property in all_properties)
         {
-            double base_value = baseProperties[property];
-            var multiplied = processedPipelines[property].mul.Calculate(base_value, inputs);
-            var final_value = processedPipelines[property].add.Calculate(multiplied, inputs);
-            processedProperties[property] = final_value;
+            double base_value = BaseProperties[property];
+            var multiplied = ProcessedPipelines[property].mul.Calculate(base_value, Inputs);
+            var final_value = ProcessedPipelines[property].add.Calculate(multiplied, Inputs);
+            ProcessedProperties[property] = final_value;
         }
     }
 
     public void IncreaseTime(double delta)
     {
-        currentTime += delta;
+        CurrentTime += delta;
     }
 
     public bool RemoveEffect(Effect effect)
     {
-        if (effect is ValueEffect value_effect)
+        if (effect is ValueEffect valueEffect)
         {
-            return RemoveValueEffect(value_effect.id, value_effect.property, value_effect.op);
+            return RemoveValueEffect(valueEffect.Id, valueEffect.Property, valueEffect.Op);
         }
-        else if (effect is MetaEffect meta_effect)
+        else if (effect is MetaEffect metaEffect)
         {
-            return RemoveMetaEffect(meta_effect.id);
+            return RemoveMetaEffect(metaEffect.Id);
         }
         return false;
     }
 
-    public bool RemoveEffect(long effect_id)
+    public bool RemoveEffect(long effectId)
     {
-        foreach (var property_kv in basePipelines)
+        foreach (var propertyKv in BasePipelines)
         {
-            bool removed = RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Add) ||
-                           RemoveValueEffect(effect_id, property_kv.Key, EffectOp.Mul);
+            bool removed = RemoveValueEffect(effectId, propertyKv.Key, EffectOp.Add) ||
+                           RemoveValueEffect(effectId, propertyKv.Key, EffectOp.Mul);
             if (removed)
             {
                 return true;
             }
         }
-        return RemoveMetaEffect(effect_id);
+        return RemoveMetaEffect(effectId);
     }
 
     bool RemoveValueEffect(long effect_id, string property, EffectOp op)
     {
-        if (basePipelines.TryGetValue(property, out var pipelines))
+        if (BasePipelines.TryGetValue(property, out var pipelines))
         {
             var pipeline = op == EffectOp.Add ? pipelines.add : pipelines.mul;
             return pipeline.RemoveEffect(effect_id);
@@ -143,78 +135,78 @@ public class EffectSystem
 
     bool RemoveMetaEffect(long effect_id)
     {
-        var node = metaEffects.First;
-        for (int i = 0; i < metaEffects.Count; i++)
+        var node = MetaEffects.First;
+        for (int i = 0; i < MetaEffects.Count; i++)
         {
-            if (node.Value.id == effect_id)
+            if (node.Value.Id == effect_id)
             {
-                metaEffects.Remove(node);
+                MetaEffects.Remove(node);
                 return true;
             }
         }
         return false;
     }
 
-    LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> meta_effects)
+    LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> metaEffects)
     {
-        LinkedList<MetaEffect> new_meta_effects = new();
-        foreach (MetaEffect meta_effect in metaEffects)
+        LinkedList<MetaEffect> newMetaEffects = new();
+        foreach (MetaEffect metaEffect in MetaEffects)
         {
-            Effect[] new_effects = meta_effect.Execute(inputs);
-            foreach (Effect effect in new_effects)
+            Effect[] newEffects = metaEffect.Execute(Inputs);
+            foreach (Effect effect in newEffects)
             {
-                if (effect is MetaEffect new_meta_effect)
+                if (effect is MetaEffect newMetaEffect)
                 {
-                    new_meta_effects.AddLast(new_meta_effect);
+                    newMetaEffects.AddLast(newMetaEffect);
                 }
                 else
                 {
-                    AddEffect(effect, processedPipelines);
+                    AddEffect(effect, ProcessedPipelines);
                 }
             }
         }
-        return new_meta_effects;
+        return newMetaEffects;
     }
 
     void CopyPipelinesToProcessed()
     {
-        processedPipelines = new();
-        foreach (var property_kv in basePipelines)
+        ProcessedPipelines = new();
+        foreach (var propertyKv in BasePipelines)
         {
-            processedPipelines.Add(property_kv.Key, (property_kv.Value.add.Copy(), property_kv.Value.mul.Copy()));
+            ProcessedPipelines.Add(propertyKv.Key, (propertyKv.Value.add.Copy(), propertyKv.Value.mul.Copy()));
         }
     }
 
     void TryAddValueTimer(LinkedListNode<ValueEffect> node, Pipeline pipeline)
     {
-        if (node.Value.duration > 0)
+        if (node.Value.Duration > 0)
         {
-            timedValueNodes.Add((node, pipeline, currentTime + node.Value.duration));
+            TimedValueNodes.Add((node, pipeline, CurrentTime + node.Value.Duration));
         }
     }
 
     void TryAddMetaTimer(LinkedListNode<MetaEffect> node)
     {
-        if (node.Value.duration > 0)
+        if (node.Value.Duration > 0)
         {
-            timedMetaNodes.Add((node, currentTime + node.Value.duration));
+            TimedMetaNodes.Add((node, CurrentTime + node.Value.Duration));
         }
     }
 
     void RemoveTimedOutEffects()
     {
-        foreach (var node_data in timedValueNodes)
+        foreach (var nodeData in TimedValueNodes)
         {
-            if (currentTime > node_data.end_time)
+            if (CurrentTime > nodeData.end_time)
             {
-                node_data.pipeline.effects.Remove(node_data.effect_node);
+                nodeData.pipeline.Effects.Remove(nodeData.effect_node);
             }
         }
-        foreach (var node_data in timedMetaNodes)
+        foreach (var nodeData in TimedMetaNodes)
         {
-            if (currentTime > node_data.end_time)
+            if (CurrentTime > nodeData.end_time)
             {
-                metaEffects.Remove(node_data.effect_node);
+                MetaEffects.Remove(nodeData.effect_node);
             }
         }
     }

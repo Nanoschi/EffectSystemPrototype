@@ -9,24 +9,24 @@ using System.Threading.Tasks;
 // (Effekt wir nicht gespeichert, nur sein Wert)
 public class Pipeline
 {
-    EffectOp accumOperator;
-    public LinkedList<ValueEffect> effects = new LinkedList<ValueEffect>();
+    EffectOp AccumOperator;
+    public LinkedList<ValueEffect> Effects = new LinkedList<ValueEffect>();
 
     public Pipeline(EffectOp op) 
     {
-        accumOperator = op;
+        AccumOperator = op;
     }
 
-    public double Calculate(double start_value, Dictionary<string, object> inputs)
+    public double Calculate(double startValue, Dictionary<string, object> inputs)
     {
         double result = 0;
-        if (accumOperator == EffectOp.Add)
+        if (AccumOperator == EffectOp.Add)
         {
-            result = effects.Aggregate(start_value, (accum, x) => x.GetValue(inputs) + accum);
+            result = Effects.Aggregate(startValue, (accum, x) => x.GetValue(inputs) + accum);
         }
-        else if (accumOperator == EffectOp.Mul)
+        else if (AccumOperator == EffectOp.Mul)
         {
-            result = effects.Aggregate(start_value, (accum, x) => x.GetValue(inputs) * accum);
+            result = Effects.Aggregate(startValue, (accum, x) => x.GetValue(inputs) * accum);
         }
 
         return result;
@@ -34,10 +34,10 @@ public class Pipeline
 
     public Pipeline Copy()
     {
-        Pipeline copy = new(accumOperator);
-        foreach (ValueEffect effect in effects)
+        Pipeline copy = new(AccumOperator);
+        foreach (ValueEffect effect in Effects)
         {
-            copy.effects.AddLast(effect);
+            copy.Effects.AddLast(effect);
         }
 
         return copy;
@@ -45,17 +45,17 @@ public class Pipeline
 
     public void AddEffect(ValueEffect effect)
     {
-        effects.AddLast(effect);
+        Effects.AddLast(effect);
     }
 
-    public bool RemoveEffect(long effect_id)
+    public bool RemoveEffect(long effectId)
     {
-        var node = effects.First;
-        for (int i = 0; i < effects.Count; i++)
+        var node = Effects.First;
+        for (int i = 0; i < Effects.Count; i++)
         {
-            if (node.Value.id == effect_id)
+            if (node.Value.Id == effectId)
             {
-                effects.Remove(node);
+                Effects.Remove(node);
                 return true;
             }
         }

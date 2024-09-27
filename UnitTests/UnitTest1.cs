@@ -11,13 +11,13 @@ namespace UnitTests
             var system = new EffectSystem();
             system.AddProperty("health", 100);
 
-            system.basePipelines.Count.Should().Be(1);
-            system.baseProperties.Count.Should().Be(1);
+            system.BasePipelines.Count.Should().Be(1);
+            system.BaseProperties.Count.Should().Be(1);
 
             system.RemoveProperty("health");
 
-            system.basePipelines.Count.Should().Be(0);
-            system.baseProperties.Count.Should().Be(0);
+            system.BasePipelines.Count.Should().Be(0);
+            system.BaseProperties.Count.Should().Be(0);
         }
 
         [TestMethod]
@@ -28,10 +28,10 @@ namespace UnitTests
             var effect = new ConstantEffect("health", 50, EffectOp.Add, 1);
             
             system.AddEffect(effect);
-            system.basePipelines["health"].add.effects.Count.Should().Be(1);
+            system.BasePipelines["health"].add.Effects.Count.Should().Be(1);
 
             system.RemoveEffect(effect);
-            system.basePipelines["health"].add.effects.Count.Should().Be(0);
+            system.BasePipelines["health"].add.Effects.Count.Should().Be(0);
         }
     }
 }
