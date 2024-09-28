@@ -127,5 +127,26 @@ namespace UnitTests
             system.ProcessedProperties["health"].Should().Be(150);
 
         }
+
+        [TestMethod]
+        public void MetaEffectsCreatingMixedEffects()
+        {
+            var system = new EffectSystem();
+            system.AddProperty("health", 100);
+            system.SetInput("health_add", 50);
+
+            Func<Dictionary<string, object>, Effect[]> metaFunction2 = (inputs)
+                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], EffectOp.Add) };
+
+            Func<Dictionary<string, object>, Effect[]> metaFunction1 = (inputs)
+                => new Effect[] { 
+                    new MetaEffect(metaFunction2), 
+                    new ConstantEffect("health", 1, EffectOp.Add),
+                    new ConstantEffect("health", 10, EffectOp.Mul)};
+
+            system.AddEffect(new MetaEffect(metaFunction1));
+            system.Process();
+            system.ProcessedProperties["health"].Should().Be(1051);
+        }
     }
 }
