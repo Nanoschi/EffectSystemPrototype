@@ -82,7 +82,7 @@
 
         foreach (string property in allProperties)
         {
-            double base_value = BaseProperties.GetPropertyValue(property);
+            double base_value = BaseProperties.GetValue(property);
             var multiplied = ProcessedPipelines[property].mul.Calculate(base_value, Inputs);
             var final_value = ProcessedPipelines[property].add.Calculate(multiplied, Inputs);
             ProcessedProperties[property] = final_value;

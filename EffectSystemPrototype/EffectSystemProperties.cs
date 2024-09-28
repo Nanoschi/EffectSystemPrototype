@@ -28,12 +28,12 @@ public class EffectSystemProperties
     }
 
     
-    public void AddProperty(string name, double value = 0)
+    public void Add(string name, double value = 0)
     {
-        AddProperty(name, value, double.NegativeInfinity, double.PositiveInfinity);
+        Add(name, value, double.NegativeInfinity, double.PositiveInfinity);
     }
 
-    public void AddProperty(string name, double value, double min, double max)
+    public void Add(string name, double value, double min, double max)
     {
         if (properties.TryAdd(name, (value, min, max)))
         {
@@ -41,7 +41,7 @@ public class EffectSystemProperties
         }
     }
 
-    public void RemoveProperty(string name)
+    public void Remove(string name)
     {
         if (properties.Remove(name))
         {
@@ -49,12 +49,12 @@ public class EffectSystemProperties
         }
     }
 
-    public bool HasProperty(string name)
+    public bool Contains(string name)
     {
         return properties.ContainsKey(name);
     }
 
-    public void SetPropertyValue(string name, double value)
+    public void SetValue(string name, double value)
     {
         if (properties.TryGetValue(name, out var currentValue))
         {
@@ -63,7 +63,7 @@ public class EffectSystemProperties
         }
     }
 
-    public double GetPropertyValue(string name)
+    public double GetValue(string name)
     {
         if (properties.TryGetValue(name, out var value))
         {
@@ -72,7 +72,7 @@ public class EffectSystemProperties
         return 0;
     }
 
-    public void OverridePropertyValue(string name, double value)
+    public void OverrideValue(string name, double value)
     {
         if (properties.TryGetValue(name, out var currentValue))
         {
@@ -126,7 +126,7 @@ public class EffectSystemProperties
     public double this[string name]
     {
         get => properties[name].Value;
-        set => SetPropertyValue(name, value);
+        set => SetValue(name, value);
     }
 
 }

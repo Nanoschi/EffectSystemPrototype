@@ -9,13 +9,13 @@ class Program
     public static void Main()
     {
         EffectSystem system = new EffectSystem();
-        system.Properties.AddProperty("health", 100);
-        system.Properties.AddProperty("mana", 100);
-        system.Properties.AddProperty("speed", 1);
-        system.Properties.AddProperty("fire_res", 0);
-        system.Properties.AddProperty("lightning_res", 0);
-        system.Properties.AddProperty("cold_res", 0);
-        system.Properties.AddProperty("armour", 0);
+        system.Properties.Add("health", 100);
+        system.Properties.Add("mana", 100);
+        system.Properties.Add("speed", 1);
+        system.Properties.Add("fire_res", 0);
+        system.Properties.Add("lightning_res", 0);
+        system.Properties.Add("cold_res", 0);
+        system.Properties.Add("armour", 0);
 
         FlaskBelt belt = new();
         belt.flasks = new Effect[][] {
