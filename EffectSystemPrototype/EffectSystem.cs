@@ -150,7 +150,7 @@
     LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> metaEffects)
     {
         LinkedList<MetaEffect> newMetaEffects = new();
-        foreach (MetaEffect metaEffect in MetaEffects)
+        foreach (MetaEffect metaEffect in metaEffects)
         {
             Effect[] newEffects = metaEffect.Execute(Inputs);
             foreach (Effect effect in newEffects)
