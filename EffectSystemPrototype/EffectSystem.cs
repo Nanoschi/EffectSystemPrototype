@@ -1,7 +1,7 @@
 ﻿public class EffectSystem
 {
-    public EffectSystemProperties BaseProperties = new(); // Basiswerte
-    public EffectSystemProperties ProcessedProperties = new(); // Endwerte
+    EffectSystemProperties BaseProperties; // Basiswerte
+    EffectSystemProperties ProcessedProperties; // Endwerte
     public Dictionary<string, (Pipeline add, Pipeline mul)> BasePipelines = new(); // Basis Zahleneffekte
     public Dictionary<string, (Pipeline add, Pipeline mul)> ProcessedPipelines = new(); // End Zahleneffekte
     public LinkedList<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
@@ -12,18 +12,15 @@
 
     public double CurrentTime = 0;
 
+    public EffectSystemProperties Properties { get => BaseProperties; }
+    public EffectSystemProperties Results { get => ProcessedProperties; }
 
-    public void AddProperty(string name, double startValue = 0, double minValue = double.NegativeInfinity, double maxValue = double.PositiveInfinity)
+    public EffectSystem()
     {
-        BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
-        BaseProperties.AddProperty(name, startValue, minValue, maxValue);
+        BaseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
+        ProcessedProperties = BaseProperties.Copy();
     }
 
-    public void RemoveProperty(string name)
-    {
-        BaseProperties.RemoveProperty(name);
-        BasePipelines.Remove(name);
-    }
 
     public void AddEffect(Effect effect, double duration = 0)
     {
@@ -34,6 +31,7 @@
     {
         if (effect is ValueEffect valueEffect)
         {
+
             if (valueEffect.Op == EffectOp.Add)
             {
                 pipelines[valueEffect.Property].add.AddEffect(valueEffect);
@@ -209,6 +207,16 @@
                 MetaEffects.Remove(nodeData.effect_node);
             }
         }
+    }
+
+    void OnPropertyAdded(string name)
+    {
+        BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
+    }
+
+    void OnPropertyRemoved(string name)
+    {
+        BasePipelines.Remove(name);
     }
 }
 

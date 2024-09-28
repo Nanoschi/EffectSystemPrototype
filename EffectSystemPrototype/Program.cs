@@ -9,13 +9,13 @@ class Program
     public static void Main()
     {
         EffectSystem system = new EffectSystem();
-        system.AddProperty("health", 100);
-        system.AddProperty("mana", 100);
-        system.AddProperty("speed", 1);
-        system.AddProperty("fire_res", 0);
-        system.AddProperty("lightning_res", 0);
-        system.AddProperty("cold_res", 0);
-        system.AddProperty("armour", 0);
+        system.Properties.AddProperty("health", 100);
+        system.Properties.AddProperty("mana", 100);
+        system.Properties.AddProperty("speed", 1);
+        system.Properties.AddProperty("fire_res", 0);
+        system.Properties.AddProperty("lightning_res", 0);
+        system.Properties.AddProperty("cold_res", 0);
+        system.Properties.AddProperty("armour", 0);
 
         FlaskBelt belt = new();
         belt.flasks = new Effect[][] {
@@ -34,7 +34,7 @@ class Program
 
         Effect[] effects = // Alle aktiven Effekte
         {
-        new ConstantEffect("health", 50, EffectOp.Add, 1),
+        new ConstantEffect("health", 50, EffectOp.Add),
         new ConstantEffect("health", 2, EffectOp.Mul),
         new ConstantEffect("mana", 2, EffectOp.Mul),
         new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
@@ -49,9 +49,9 @@ class Program
         system.RemoveEffect(effects[2]); // health * 2 Effekt wird entfernt
         system.Process();
 
-        foreach (var kv in system.ProcessedProperties.properties)
+        foreach (var kv in system.Results.properties)
         {
-            Console.WriteLine($"{kv.Key} => Base: {system.BaseProperties[kv.Key]}, Processed: {kv.Value}");
+            Console.WriteLine($"{kv.Key} => Base: {system.Properties[kv.Key]}, Processed: {kv.Value.Value}");
         }
     }
 

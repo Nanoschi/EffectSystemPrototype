@@ -6,12 +6,25 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+public delegate void PropertyAddedCallback(string name);
+public delegate void PropertyRemovedCallback(string name);
+
 public class EffectSystemProperties
 {
     public Dictionary<string, (double Value, double MinValue, double MaxValue)> properties = new();
+
+    PropertyAddedCallback propertyAdded;
+    PropertyRemovedCallback propertyRemoved;
+
     public int Count
     {
         get => properties.Count;
+    }
+
+    public EffectSystemProperties(PropertyAddedCallback propertyAdded, PropertyRemovedCallback propertyRemoved)
+    {
+        this.propertyAdded = propertyAdded;
+        this.propertyRemoved = propertyRemoved;
     }
 
     
@@ -22,12 +35,23 @@ public class EffectSystemProperties
 
     public void AddProperty(string name, double value, double min, double max)
     {
-        properties.TryAdd(name, (value, min, max));
+        if (properties.TryAdd(name, (value, min, max)))
+        {
+            propertyAdded(name);
+        }
     }
 
     public void RemoveProperty(string name)
     {
-        properties.Remove(name);
+        if (properties.Remove(name))
+        {
+            propertyRemoved(name);
+        }
+    }
+
+    public bool HasProperty(string name)
+    {
+        return properties.ContainsKey(name);
     }
 
     public void SetPropertyValue(string name, double value)
@@ -91,7 +115,7 @@ public class EffectSystemProperties
 
     public EffectSystemProperties Copy()
     {
-        EffectSystemProperties copy = new();
+        EffectSystemProperties copy = new(propertyAdded, propertyRemoved);
         foreach (var property in properties)
         {
             copy.properties[property.Key] = property.Value; 
