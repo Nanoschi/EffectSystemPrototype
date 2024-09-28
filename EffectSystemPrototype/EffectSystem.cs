@@ -13,10 +13,10 @@
     public double CurrentTime = 0;
 
 
-    public void AddProperty(string name, double startValue = 0)
+    public void AddProperty(string name, double startValue = 0, double minValue = double.NegativeInfinity, double maxValue = double.PositiveInfinity)
     {
         BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
-        BaseProperties.AddProperty(name, startValue);
+        BaseProperties.AddProperty(name, startValue, minValue, maxValue);
     }
 
     public void RemoveProperty(string name)

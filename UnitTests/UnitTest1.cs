@@ -148,5 +148,26 @@ namespace UnitTests
             system.Process();
             system.ProcessedProperties["health"].Should().Be(1051);
         }
+
+        [TestMethod]
+        public void PropertyMinValue()
+        {
+            var system = new EffectSystem();
+            system.AddProperty("health", 100, 0);
+
+            system.AddEffect(new ConstantEffect("health", -200, EffectOp.Add));
+            system.Process();
+            system.ProcessedProperties["health"].Should().Be(0);
+        }
+
+        public void PropertyMaxValue()
+        {
+            var system = new EffectSystem();
+            system.AddProperty("health", 100, 200);
+
+            system.AddEffect(new ConstantEffect("health", 150, EffectOp.Add));
+            system.Process();
+            system.ProcessedProperties["health"].Should().Be(200);
+        }
     }
 }
