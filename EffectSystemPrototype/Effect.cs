@@ -57,7 +57,7 @@ public class ConstantEffect : ValueEffect
 }
 
 // Effekt, der eine Zahl auf Basis von input werten liefert
-class InputEffect : ValueEffect
+public class InputEffect : ValueEffect
 {
     public Func<Dictionary<string, object>, double> effectFunction;
     public InputEffect(string property, Func<Dictionary<string, object>, double> function, EffectOp op, double duration = 0) : base(property, op)
