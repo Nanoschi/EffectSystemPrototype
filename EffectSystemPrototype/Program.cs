@@ -49,7 +49,7 @@ class Program
         system.RemoveEffect(effects[2]); // health * 2 Effekt wird entfernt
         system.Process();
 
-        foreach (var kv in system.ProcessedProperties)
+        foreach (var kv in system.ProcessedProperties.properties)
         {
             Console.WriteLine($"{kv.Key} => Base: {system.BaseProperties[kv.Key]}, Processed: {kv.Value}");
         }

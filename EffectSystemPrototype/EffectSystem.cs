@@ -1,7 +1,7 @@
 ﻿public class EffectSystem
 {
-    public Dictionary<string, double> BaseProperties = new(); // Basiswerte
-    public Dictionary<string, double> ProcessedProperties = new(); // Endwerte
+    public EffectSystemProperties BaseProperties = new(); // Basiswerte
+    public EffectSystemProperties ProcessedProperties = new(); // Endwerte
     public Dictionary<string, (Pipeline add, Pipeline mul)> BasePipelines = new(); // Basis Zahleneffekte
     public Dictionary<string, (Pipeline add, Pipeline mul)> ProcessedPipelines = new(); // End Zahleneffekte
     public LinkedList<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
@@ -16,12 +16,12 @@
     public void AddProperty(string name, double startValue = 0)
     {
         BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
-        BaseProperties.Add(name, startValue);
+        BaseProperties.AddProperty(name, startValue);
     }
 
     public void RemoveProperty(string name)
     {
-        BaseProperties.Remove(name);
+        BaseProperties.RemoveProperty(name);
         BasePipelines.Remove(name);
     }
 
@@ -70,8 +70,8 @@
     public void Process()
     {
         RemoveTimedOutEffects();
-        var all_properties = BaseProperties.Keys.ToArray();
-        ProcessedProperties = BaseProperties.ToDictionary();
+        var allProperties = BaseProperties.GetPropertyArray();
+        ProcessedProperties = BaseProperties.Copy();
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
         LinkedList<MetaEffect> newMetaEffects = MetaEffects;
@@ -82,9 +82,9 @@
         while (newMetaEffects.Count > 0);
 
 
-        foreach (string property in all_properties)
+        foreach (string property in allProperties)
         {
-            double base_value = BaseProperties[property];
+            double base_value = BaseProperties.GetPropertyValue(property);
             var multiplied = ProcessedPipelines[property].mul.Calculate(base_value, Inputs);
             var final_value = ProcessedPipelines[property].add.Calculate(multiplied, Inputs);
             ProcessedProperties[property] = final_value;
