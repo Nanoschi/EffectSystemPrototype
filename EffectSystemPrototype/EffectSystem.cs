@@ -2,8 +2,8 @@
 {
     EffectSystemProperties BaseProperties; // Basiswerte
     EffectSystemProperties ProcessedProperties; // Endwerte
-    public Dictionary<string, (Pipeline add, Pipeline mul)> BasePipelines = new(); // Basis Zahleneffekte
-    public Dictionary<string, (Pipeline add, Pipeline mul)> ProcessedPipelines = new(); // End Zahleneffekte
+    public Dictionary<string, Pipeline> BasePipelines = new(); // Basis Zahleneffekte
+    public Dictionary<string, Pipeline> ProcessedPipelines = new(); // End Zahleneffekte
     public LinkedList<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
     public Dictionary<string, object> Inputs = new();
 
@@ -27,22 +27,11 @@
         AddEffect(effect, BasePipelines);
     }
 
-    void AddEffect(Effect effect, Dictionary<string, (Pipeline add, Pipeline mul)> pipelines)
+    void AddEffect(Effect effect, Dictionary<string, Pipeline> pipelines)
     {
         if (effect is ValueEffect valueEffect)
         {
-
-            if (valueEffect.Op == EffectOp.Add)
-            {
-                pipelines[valueEffect.Property].add.AddEffect(valueEffect);
-                TryAddValueTimer(pipelines[valueEffect.Property].add.Effects.Last, pipelines[valueEffect.Property].add);
-
-            }
-            else if (valueEffect.Op == EffectOp.Mul)
-            {
-                pipelines[valueEffect.Property].mul.AddEffect(valueEffect);
-                TryAddValueTimer(pipelines[valueEffect.Property].mul.Effects.Last, pipelines[valueEffect.Property].mul);
-            }
+            pipelines[valueEffect.Property].AddEffect(valueEffect);
         }
 
         if (effect is MetaEffect metaEffect)
@@ -67,7 +56,6 @@
 
     public void Process()
     {
-        RemoveTimedOutEffects();
         var allProperties = BaseProperties.GetPropertyArray();
         ProcessedProperties = BaseProperties.Copy();
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
@@ -82,10 +70,8 @@
 
         foreach (string property in allProperties)
         {
-            double base_value = BaseProperties.GetValue(property);
-            var multiplied = ProcessedPipelines[property].mul.Calculate(base_value, Inputs);
-            var final_value = ProcessedPipelines[property].add.Calculate(multiplied, Inputs);
-            ProcessedProperties[property] = final_value;
+            double baseValue = BaseProperties.GetValue(property);
+            ProcessedProperties[property] = ProcessedPipelines[property].Calculate(baseValue, Inputs);
         }
     }
 
@@ -98,7 +84,7 @@
     {
         if (effect is ValueEffect valueEffect)
         {
-            return RemoveValueEffect(valueEffect.Id, valueEffect.Property, valueEffect.Op);
+            return RemoveValueEffect(valueEffect);
         }
         else if (effect is MetaEffect metaEffect)
         {
@@ -107,28 +93,10 @@
         return false;
     }
 
-    public bool RemoveEffect(long effectId)
+    bool RemoveValueEffect(ValueEffect effect)
     {
-        foreach (var propertyKv in BasePipelines)
-        {
-            bool removed = RemoveValueEffect(effectId, propertyKv.Key, EffectOp.Add) ||
-                           RemoveValueEffect(effectId, propertyKv.Key, EffectOp.Mul);
-            if (removed)
-            {
-                return true;
-            }
-        }
-        return RemoveMetaEffect(effectId);
-    }
-
-    bool RemoveValueEffect(long effect_id, string property, EffectOp op)
-    {
-        if (BasePipelines.TryGetValue(property, out var pipelines))
-        {
-            var pipeline = op == EffectOp.Add ? pipelines.add : pipelines.mul;
-            return pipeline.RemoveEffect(effect_id);
-        }
-        return false;
+        var pipeline = BasePipelines[effect.Property];
+        return pipeline.RemoveEffect(effect);
     }
 
     bool RemoveMetaEffect(long effect_id)
@@ -171,7 +139,7 @@
         ProcessedPipelines = new();
         foreach (var propertyKv in BasePipelines)
         {
-            ProcessedPipelines.Add(propertyKv.Key, (propertyKv.Value.add.Copy(), propertyKv.Value.mul.Copy()));
+            ProcessedPipelines.Add(propertyKv.Key, propertyKv.Value.Copy());
         }
     }
 
@@ -191,32 +159,25 @@
         }
     }
 
-    void RemoveTimedOutEffects()
+    void OnPropertyAdded(string name, bool autoGenGroups)
     {
-        foreach (var nodeData in TimedValueNodes)
+        if (autoGenGroups)
         {
-            if (CurrentTime > nodeData.end_time)
-            {
-                nodeData.pipeline.Effects.Remove(nodeData.effect_node);
-            }
+            AutoGeneratePipeline(name);
         }
-        foreach (var nodeData in TimedMetaNodes)
-        {
-            if (CurrentTime > nodeData.end_time)
-            {
-                MetaEffects.Remove(nodeData.effect_node);
-            }
-        }
-    }
-
-    void OnPropertyAdded(string name)
-    {
-        BasePipelines.Add(name, (new(EffectOp.Add), new(EffectOp.Mul)));
     }
 
     void OnPropertyRemoved(string name)
     {
         BasePipelines.Remove(name);
+    }
+
+    void AutoGeneratePipeline(string property)
+    {
+        Pipeline pipeline = new();
+        pipeline.AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
+        pipeline.AddGroup("add", EffectOp.Add, EffectOp.Add);
+        BasePipelines[property] = pipeline;
     }
 }
 

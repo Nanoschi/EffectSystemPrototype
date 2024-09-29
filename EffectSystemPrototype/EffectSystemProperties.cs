@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-public delegate void PropertyAddedCallback(string name);
+public delegate void PropertyAddedCallback(string name, bool autoGenGroups);
 public delegate void PropertyRemovedCallback(string name);
 
 public class EffectSystemProperties
@@ -28,16 +28,16 @@ public class EffectSystemProperties
     }
 
     
-    public void Add(string name, double value = 0)
+    public void Add(string name, double value = 0, bool autoGenGroups = true)
     {
         Add(name, value, double.NegativeInfinity, double.PositiveInfinity);
     }
 
-    public void Add(string name, double value, double min, double max)
+    public void Add(string name, double value, double min, double max, bool autoGenGroups = true)
     {
         if (properties.TryAdd(name, (value, min, max)))
         {
-            propertyAdded(name);
+            propertyAdded(name, autoGenGroups);
         }
     }
 

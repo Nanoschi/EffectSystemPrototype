@@ -5,42 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-// Speichert alle Werte, die für ein bestimmtes Property addiert und multipliziert werden müssen
-// (Effekt wir nicht gespeichert, nur sein Wert)
-public class Pipeline
+public class PipelineGroup
 {
-    EffectOp AccumOperator;
-    public LinkedList<ValueEffect> Effects = new LinkedList<ValueEffect>();
+    public LinkedList<ValueEffect> Effects = new();
+    public EffectOp BaseOperator;
+    public EffectOp EffectOperator;
 
-    public Pipeline(EffectOp op) 
+    public PipelineGroup(EffectOp baseOp, EffectOp effectOp)
     {
-        AccumOperator = op;
+        BaseOperator = baseOp;
+        EffectOperator = effectOp;
     }
 
-    public double Calculate(double startValue, Dictionary<string, object> inputs)
+    public double Calculate(Dictionary<string, object> inputs)
     {
-        double result = 0;
-        if (AccumOperator == EffectOp.Add)
+        if (EffectOperator == EffectOp.Add)
         {
-            result = Effects.Aggregate(startValue, (accum, x) => x.GetValue(inputs) + accum);
+            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputs));
         }
-        else if (AccumOperator == EffectOp.Mul)
+        else if (EffectOperator == EffectOp.Mul)
         {
-            result = Effects.Aggregate(startValue, (accum, x) => x.GetValue(inputs) * accum);
+            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputs));
         }
-
-        return result;
-    }
-
-    public Pipeline Copy()
-    {
-        Pipeline copy = new(AccumOperator);
-        foreach (ValueEffect effect in Effects)
-        {
-            copy.Effects.AddLast(effect);
-        }
-
-        return copy;
+        return 0;
     }
 
     public void AddEffect(ValueEffect effect)
@@ -48,18 +35,88 @@ public class Pipeline
         Effects.AddLast(effect);
     }
 
-    public bool RemoveEffect(long effectId)
+    public bool RemoveEffect(ValueEffect effect)
     {
-        var node = Effects.First;
-        for (int i = 0; i < Effects.Count; i++)
+        return Effects.Remove(effect);
+    }
+
+    public PipelineGroup Copy()
+    {
+        PipelineGroup newList = new(BaseOperator, EffectOperator);
+        foreach (var effect in Effects)
         {
-            if (node.Value.Id == effectId)
+            newList.Effects.AddLast(effect);
+        }
+        return newList;
+    }
+}
+
+public class Pipeline
+{
+    public List<PipelineGroup> EffectGroups = new();
+    public Dictionary<string, PipelineGroup> GroupNames = new();
+
+    public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Count); }
+
+    public double Calculate(double startValue, Dictionary<string, object> inputs)
+    {
+        foreach (PipelineGroup group in EffectGroups)
+        {
+            double value = group.Calculate(inputs);
+            if (group.BaseOperator == EffectOp.Add)
             {
-                Effects.Remove(node);
-                return true;
+                startValue += value;
+            }
+            else if (group.BaseOperator == EffectOp.Mul)
+            {
+                startValue *= value;
             }
         }
-        return false;
+        return startValue;
     }
+
+    public void AddEffect(ValueEffect effect)
+    {
+        if (GroupNames.TryGetValue(effect.GroupName, out var group)) {
+            group.AddEffect(effect);
+        }
+        else
+        {
+            throw new ArgumentException($"Group '{effect.GroupName}' not found in pipeline");
+        }
+    }
+
+    public bool RemoveEffect(ValueEffect effect)
+    {
+        var group = GroupNames[effect.GroupName];
+        return group.RemoveEffect(effect);
+    }
+
+    public void AddGroup(string name, EffectOp baseOp, EffectOp effectOp)
+    {
+        PipelineGroup newGroup = new(baseOp, effectOp);
+        GroupNames.Add(name, newGroup);
+        EffectGroups.Add(newGroup);
+    }
+
+    public bool RemoveGroup(string name)
+    {
+        var group = GroupNames[name];
+        EffectGroups.Remove(group);
+        return GroupNames.Remove(name);
+    }
+
+    public Pipeline Copy()
+    {
+        Pipeline copy = new();
+        foreach (PipelineGroup group in EffectGroups)
+        {
+            copy.EffectGroups.Add(group);
+        }
+        copy.GroupNames = GroupNames;
+        return copy;
+    }
+
+
 }
 

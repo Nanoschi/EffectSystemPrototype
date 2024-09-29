@@ -19,13 +19,13 @@ class Program
 
         FlaskBelt belt = new();
         belt.flasks = new Effect[][] {
-            new Effect[] { new ConstantEffect("speed", 1.4, EffectOp.Mul) }, // Quicksilver
+            new Effect[] { new ConstantEffect("speed", 1.4, "mul") }, // Quicksilver
             new Effect[] { 
-            new ConstantEffect("fire_res", 0.35, EffectOp.Add),
-            new ConstantEffect("lightning_res", 0.35, EffectOp.Add),
-            new ConstantEffect("cold_res", 0.35, EffectOp.Add)
+            new ConstantEffect("fire_res", 0.35, "add"),
+            new ConstantEffect("lightning_res", 0.35, "add"),
+            new ConstantEffect("cold_res", 0.35, "add")
             }, // Bismuth
-            new Effect[] { new ConstantEffect("armour", 1500, EffectOp.Add) }, // Granite
+            new Effect[] { new ConstantEffect("armour", 1500, "add") }, // Granite
         };
 
 
@@ -34,9 +34,9 @@ class Program
 
         Effect[] effects = // Alle aktiven Effekte
         {
-        new ConstantEffect("health", 50, EffectOp.Add),
-        new ConstantEffect("health", 2, EffectOp.Mul),
-        new ConstantEffect("mana", 2, EffectOp.Mul),
+        new ConstantEffect("health", 50, "add"),
+        new ConstantEffect("health", 2, "mul"),
+        new ConstantEffect("mana", 2, "mul"),
         new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
         new MetaEffect(IntManaEffect), // Fügt 1 Mana pro 2 int hinzu
         };
@@ -77,7 +77,7 @@ class Program
         if (inputs.ContainsKey("int"))
         {
             int intelligence = (int)inputs["int"];
-            return new Effect[] { new ConstantEffect("mana", intelligence / 2, EffectOp.Add) };
+            return new Effect[] { new ConstantEffect("mana", intelligence / 2, "add") };
         }
         return new Effect[] { };
     }

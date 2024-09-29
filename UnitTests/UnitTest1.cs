@@ -25,13 +25,13 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            var effect = new ConstantEffect("health", 50, EffectOp.Add, 1);
+            var effect = new ConstantEffect("health", 50, "add", 1);
             
             system.AddEffect(effect);
-            system.BasePipelines["health"].add.Effects.Count.Should().Be(1);
+            system.BasePipelines["health"].GroupNames["add"].Effects.Count.Should().Be(1);
 
             system.RemoveEffect(effect);
-            system.BasePipelines["health"].add.Effects.Count.Should().Be(0);
+            system.BasePipelines["health"].GroupNames["add"].Effects.Count.Should().Be(0);
         }
 
         [TestMethod]
@@ -40,8 +40,8 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
 
-            system.AddEffect(new ConstantEffect("health", 50, EffectOp.Add));
-            system.AddEffect(new ConstantEffect("health", 25, EffectOp.Add));
+            system.AddEffect(new ConstantEffect("health", 50, "add"));
+            system.AddEffect(new ConstantEffect("health", 25, "add"));
 
             system.Process();
 
@@ -55,8 +55,8 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
 
-            system.AddEffect(new ConstantEffect("health", 2, EffectOp.Mul));
-            system.AddEffect(new ConstantEffect("health", 3, EffectOp.Mul));
+            system.AddEffect(new ConstantEffect("health", 2, "mul"));
+            system.AddEffect(new ConstantEffect("health", 3, "mul"));
 
             system.Process();
 
@@ -70,8 +70,8 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
 
-            system.AddEffect(new ConstantEffect("health", 2, EffectOp.Mul));
-            system.AddEffect(new ConstantEffect("health", 50, EffectOp.Add));
+            system.AddEffect(new ConstantEffect("health", 2, "mul"));
+            system.AddEffect(new ConstantEffect("health", 50, "add"));
 
             system.Process();
 
@@ -87,7 +87,7 @@ namespace UnitTests
             Func<Dictionary<string, object>, double> effectFunction = (input) => (int)input["intelligence"] * 0.5;
 
             system.Properties.Add("mana", 100);
-            system.AddEffect(new InputEffect("mana", effectFunction, EffectOp.Add));
+            system.AddEffect(new InputEffect("mana", effectFunction, "add"));
 
             system.Process();
 
@@ -102,7 +102,7 @@ namespace UnitTests
             system.SetInput("health_add", 50);
 
             Func<Dictionary<string, object>, Effect[]> metaFunction = (inputs)
-                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], EffectOp.Add)};
+                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add")};
 
             system.AddEffect(new MetaEffect(metaFunction));
             system.Process();
@@ -117,7 +117,7 @@ namespace UnitTests
             system.SetInput("health_add", 50);
 
             Func<Dictionary<string, object>, Effect[]> metaFunction2 = (inputs)
-                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], EffectOp.Add) };
+                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
 
             Func<Dictionary<string, object>, Effect[]> metaFunction1 = (inputs)
                 => new[] { new MetaEffect(metaFunction2) };
@@ -136,13 +136,13 @@ namespace UnitTests
             system.SetInput("health_add", 50);
 
             Func<Dictionary<string, object>, Effect[]> metaFunction2 = (inputs)
-                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], EffectOp.Add) };
+                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
 
             Func<Dictionary<string, object>, Effect[]> metaFunction1 = (inputs)
                 => new Effect[] { 
                     new MetaEffect(metaFunction2), 
-                    new ConstantEffect("health", 1, EffectOp.Add),
-                    new ConstantEffect("health", 10, EffectOp.Mul)};
+                    new ConstantEffect("health", 1, "add"),
+                    new ConstantEffect("health", 10, "mul")};
 
             system.AddEffect(new MetaEffect(metaFunction1));
             system.Process();
@@ -155,7 +155,7 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100, 0, double.PositiveInfinity);
 
-            system.AddEffect(new ConstantEffect("health", -200, EffectOp.Add));
+            system.AddEffect(new ConstantEffect("health", -200, "add"));
             system.Process();
             system.Results["health"].Should().Be(0);
         }
@@ -165,7 +165,7 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100, double.NegativeInfinity, 200);
 
-            system.AddEffect(new ConstantEffect("health", 150, EffectOp.Add));
+            system.AddEffect(new ConstantEffect("health", 150, "add"));
             system.Process();
             system.Results["health"].Should().Be(200);
         }
