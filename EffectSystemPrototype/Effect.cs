@@ -28,12 +28,12 @@ public abstract class Effect
 public abstract class ValueEffect : Effect
 {
     public string Property;
-    public EffectOp Op;
+    public string GroupName;
 
-    public ValueEffect(string property, EffectOp op)
+    public ValueEffect(string property, string group)
     {
         this.Property = property;
-        this.Op = op;
+        this.GroupName = group;
     }
 
     public abstract double GetValue(Dictionary<string, object> inputs);
@@ -44,7 +44,7 @@ public abstract class ValueEffect : Effect
 public class ConstantEffect : ValueEffect
 {
     public double Value;
-    public ConstantEffect(string property, double value, EffectOp op, double duration = 0) : base(property, op)
+    public ConstantEffect(string property, double value, string opGroup, double duration = 0) : base(property, opGroup)
     {
         this.Value = value;
         this.Duration = duration;
@@ -60,7 +60,7 @@ public class ConstantEffect : ValueEffect
 public class InputEffect : ValueEffect
 {
     public Func<Dictionary<string, object>, double> effectFunction;
-    public InputEffect(string property, Func<Dictionary<string, object>, double> function, EffectOp op, double duration = 0) : base(property, op)
+    public InputEffect(string property, Func<Dictionary<string, object>, double> function, string opGroup, double duration = 0) : base(property, opGroup)
     {
         this.Duration = duration;
         this.effectFunction = function;
