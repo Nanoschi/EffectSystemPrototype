@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-class PipelineGroup
+public class PipelineGroup
 {
-    LinkedList<ValueEffect> Effects = new();
+    public LinkedList<ValueEffect> Effects = new();
     public EffectOp BaseOperator;
     public EffectOp EffectOperator;
 
@@ -17,22 +17,27 @@ class PipelineGroup
         EffectOperator = effectOp;
     }
 
-    public double Calculate(double startValue, Dictionary<string, object> inputs)
+    public double Calculate(Dictionary<string, object> inputs)
     {
         if (EffectOperator == EffectOp.Add)
         {
-            return Effects.Aggregate(startValue, (acc, e) => acc + e.GetValue(inputs));
+            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputs));
         }
         else if (EffectOperator == EffectOp.Mul)
         {
-            return Effects.Aggregate(startValue, (acc, e) => acc * e.GetValue(inputs));
+            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputs));
         }
-        return startValue;
+        return 0;
     }
 
     public void AddEffect(ValueEffect effect)
     {
         Effects.AddLast(effect);
+    }
+
+    public bool RemoveEffect(ValueEffect effect)
+    {
+        return Effects.Remove(effect);
     }
 
     public PipelineGroup Copy()
@@ -48,18 +53,16 @@ class PipelineGroup
 
 public class Pipeline
 {
-    List<PipelineGroup> EffectGroups = new();
-    Dictionary<string, PipelineGroup> GroupNames = new();
+    public List<PipelineGroup> EffectGroups = new();
+    public Dictionary<string, PipelineGroup> GroupNames = new();
 
-    public Pipeline()
-    {
-    }
+    public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Count); }
 
     public double Calculate(double startValue, Dictionary<string, object> inputs)
     {
         foreach (PipelineGroup group in EffectGroups)
         {
-            double value = group.Calculate(startValue, inputs);
+            double value = group.Calculate(inputs);
             if (group.BaseOperator == EffectOp.Add)
             {
                 startValue += value;
@@ -83,9 +86,10 @@ public class Pipeline
         }
     }
 
-    public bool RemoveEffect(long effectId)
+    public bool RemoveEffect(ValueEffect effect)
     {
-        return true;
+        var group = GroupNames[effect.GroupName];
+        return group.RemoveEffect(effect);
     }
 
     public void AddGroup(string name, EffectOp baseOp, EffectOp effectOp)
