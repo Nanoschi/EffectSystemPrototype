@@ -99,6 +99,13 @@ public class Pipeline
         EffectGroups.Add(newGroup);
     }
 
+    public bool RemoveGroup(string name)
+    {
+        var group = GroupNames[name];
+        EffectGroups.Remove(group);
+        return GroupNames.Remove(name);
+    }
+
     public Pipeline Copy()
     {
         Pipeline copy = new();
