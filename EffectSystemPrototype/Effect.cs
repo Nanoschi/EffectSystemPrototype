@@ -15,7 +15,6 @@ public abstract class Effect
 {
     public static long MaxId = 0;
     public long Id;
-    public double Duration = 0;
 
     protected Effect()
     {
@@ -44,10 +43,9 @@ public abstract class ValueEffect : Effect
 public class ConstantEffect : ValueEffect
 {
     public double Value;
-    public ConstantEffect(string property, double value, string opGroup, double duration = 0) : base(property, opGroup)
+    public ConstantEffect(string property, double value, string opGroup) : base(property, opGroup)
     {
         this.Value = value;
-        this.Duration = duration;
     }
 
     public override double GetValue(Dictionary<string, object> inputs)
@@ -60,9 +58,8 @@ public class ConstantEffect : ValueEffect
 public class InputEffect : ValueEffect
 {
     public Func<Dictionary<string, object>, double> effectFunction;
-    public InputEffect(string property, Func<Dictionary<string, object>, double> function, string opGroup, double duration = 0) : base(property, opGroup)
+    public InputEffect(string property, Func<Dictionary<string, object>, double> function, string opGroup) : base(property, opGroup)
     {
-        this.Duration = duration;
         this.effectFunction = function;
     }
 
@@ -77,9 +74,8 @@ public class MetaEffect : Effect
 {
     public Func<Dictionary<string, object>, Effect[]> metaFunction;
 
-    public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction, double duration = 0)
+    public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction)
     {
-        this.Duration = duration;
         this.metaFunction = metaFunction;
     }
 

@@ -8,6 +8,7 @@ class Program
 {
     public static void Main()
     {
+        
         EffectSystem system = new EffectSystem();
         system.Properties.Add("health", 100);
         system.Properties.Add("mana", 100);
@@ -45,7 +46,7 @@ class Program
         {
             system.AddEffect(effect);
         }
-        system.IncreaseTime(1.5); // health + 50 Effekt wird entfernt
+
         system.RemoveEffect(effects[2]); // health * 2 Effekt wird entfernt
         system.Process();
 

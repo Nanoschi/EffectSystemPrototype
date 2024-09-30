@@ -10,10 +10,11 @@
     public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> TimedValueNodes = new();
     public List<(LinkedListNode<MetaEffect> effect_node, double end_time)> TimedMetaNodes = new();
 
-    public double CurrentTime = 0;
+    public EffectSystemThresholds EffectThresholds = new ();
 
     public EffectSystemProperties Properties { get => BaseProperties; }
     public EffectSystemProperties Results { get => ProcessedProperties; }
+    public EffectSystemThresholds Thresholds { get => EffectThresholds; }
 
     public EffectSystem()
     {
@@ -37,7 +38,6 @@
         if (effect is MetaEffect metaEffect)
         {
             MetaEffects.AddLast(metaEffect);
-            TryAddMetaTimer(MetaEffects.Last);
         }
     }
 
@@ -58,6 +58,7 @@
     {
         var allProperties = BaseProperties.GetPropertyArray();
         ProcessedProperties = BaseProperties.Copy();
+        EffectThresholds.RemoveOutOfThreshold(this);
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
         LinkedList<MetaEffect> newMetaEffects = MetaEffects;
@@ -73,11 +74,6 @@
             double baseValue = BaseProperties.GetValue(property);
             ProcessedProperties[property] = ProcessedPipelines[property].Calculate(baseValue, Inputs);
         }
-    }
-
-    public void IncreaseTime(double delta)
-    {
-        CurrentTime += delta;
     }
 
     public bool RemoveEffect(Effect effect)
@@ -140,22 +136,6 @@
         foreach (var propertyKv in BasePipelines)
         {
             ProcessedPipelines.Add(propertyKv.Key, propertyKv.Value.Copy());
-        }
-    }
-
-    void TryAddValueTimer(LinkedListNode<ValueEffect> node, Pipeline pipeline)
-    {
-        if (node.Value.Duration > 0)
-        {
-            TimedValueNodes.Add((node, pipeline, CurrentTime + node.Value.Duration));
-        }
-    }
-
-    void TryAddMetaTimer(LinkedListNode<MetaEffect> node)
-    {
-        if (node.Value.Duration > 0)
-        {
-            TimedMetaNodes.Add((node, CurrentTime + node.Value.Duration));
         }
     }
 

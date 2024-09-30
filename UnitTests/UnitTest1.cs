@@ -25,7 +25,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            var effect = new ConstantEffect("health", 50, "add", 1);
+            var effect = new ConstantEffect("health", 50, "add");
             
             system.AddEffect(effect);
             system.BasePipelines["health"].GroupNames["add"].Effects.Count.Should().Be(1);
@@ -203,6 +203,36 @@ namespace UnitTests
 
             system.Process();
             system.Results["energy_shield"].Should().Be(198);
+        }
+
+        [TestMethod]
+        public void AddRemoveThresholdValue()
+        {
+            var system = new EffectSystem();
+            system.EffectThresholds.AddValue("time");
+            system.EffectThresholds.Thresholds.Count.Should().Be(1);
+
+            system.EffectThresholds.RemoveValue("time");
+            system.EffectThresholds.Thresholds.Count.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void ApplyThreshold()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            system.EffectThresholds.AddValue("time", 0);
+            var effect = new ConstantEffect("health", 100, "add");
+            system.AddEffect(effect);
+            system.EffectThresholds.AddEffect(effect, "time", 1, LimitDirection.Max);
+
+            system.EffectThresholds.IncValue("time", 0.5);
+            system.Process();
+            system.Results["health"].Should().Be(200);
+
+            system.EffectThresholds.IncValue("time", 1.5);
+            system.Process();
+            system.Results["health"].Should().Be(100);
         }
     }
 }
