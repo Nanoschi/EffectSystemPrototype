@@ -161,9 +161,11 @@
 
     void OnPropertyAdded(string name, bool autoGenGroups)
     {
+        Pipeline pipeline = new();
+        BasePipelines[name] = pipeline;
         if (autoGenGroups)
         {
-            AutoGeneratePipeline(name);
+            AutoGenerateGroups(name);
         }
     }
 
@@ -172,12 +174,10 @@
         BasePipelines.Remove(name);
     }
 
-    void AutoGeneratePipeline(string property)
+    void AutoGenerateGroups(string property)
     {
-        Pipeline pipeline = new();
-        pipeline.AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
-        pipeline.AddGroup("add", EffectOp.Add, EffectOp.Add);
-        BasePipelines[property] = pipeline;
+        BasePipelines[property].AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
+        BasePipelines[property].AddGroup("add", EffectOp.Add, EffectOp.Add);
     }
 }
 

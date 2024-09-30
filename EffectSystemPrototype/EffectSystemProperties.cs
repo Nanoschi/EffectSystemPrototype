@@ -30,7 +30,7 @@ public class EffectSystemProperties
     
     public void Add(string name, double value = 0, bool autoGenGroups = true)
     {
-        Add(name, value, double.NegativeInfinity, double.PositiveInfinity);
+        Add(name, value, double.NegativeInfinity, double.PositiveInfinity, autoGenGroups);
     }
 
     public void Add(string name, double value, double min, double max, bool autoGenGroups = true)

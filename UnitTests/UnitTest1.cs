@@ -160,6 +160,7 @@ namespace UnitTests
             system.Results["health"].Should().Be(0);
         }
 
+        [TestMethod]
         public void PropertyMaxValue()
         {
             var system = new EffectSystem();
@@ -168,6 +169,19 @@ namespace UnitTests
             system.AddEffect(new ConstantEffect("health", 150, "add"));
             system.Process();
             system.Results["health"].Should().Be(200);
+        }
+
+        [TestMethod]
+        public void AddRemovePipelineGroup()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100, false);
+
+            system.BasePipelines["health"].AddGroup("group", EffectOp.Add, EffectOp.Add);
+            system.BasePipelines["health"].EffectGroups.Count.Should().Be(1);
+
+            system.BasePipelines["health"].RemoveGroup("group");
+            system.BasePipelines["health"].EffectGroups.Count.Should().Be(0);
         }
     }
 }
