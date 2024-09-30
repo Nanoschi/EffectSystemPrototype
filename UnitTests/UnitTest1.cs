@@ -183,5 +183,26 @@ namespace UnitTests
             system.BasePipelines["health"].RemoveGroup("group");
             system.BasePipelines["health"].EffectGroups.Count.Should().Be(0);
         }
+
+        [TestMethod]
+        public void PoeLikeIncreasedMore()
+        {
+            //https://www.pathofexile.com/forum/view-thread/261646
+            var system = new EffectSystem();
+            system.Properties.Add("energy_shield", 100, false);
+            system.BasePipelines["energy_shield"].AddGroup("increased", EffectOp.Mul, EffectOp.Add);
+            system.BasePipelines["energy_shield"].AddGroup("more", EffectOp.Mul, EffectOp.Mul);
+
+            system.AddEffect(new ConstantEffect("energy_shield", 1, "increased"));
+            system.AddEffect(new ConstantEffect("energy_shield", 0.2, "increased"));
+            system.AddEffect(new ConstantEffect("energy_shield", 0.3, "increased"));
+
+            system.AddEffect(new ConstantEffect("energy_shield", 1.1, "more"));
+            system.AddEffect(new ConstantEffect("energy_shield", 1.2, "more"));
+
+
+            system.Process();
+            system.Results["energy_shield"].Should().Be(198);
+        }
     }
 }
