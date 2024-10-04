@@ -1,4 +1,6 @@
-﻿namespace EffectSystemPrototype
+﻿using Microsoft.VisualBasic.CompilerServices;
+
+namespace EffectSystemPrototype
 {
     public class InputVector
     {
@@ -20,9 +22,23 @@
             return _inputs.Remove(name);
         }
 
-        public bool TryGetValue(string key, out object value)
+        public bool TryGetValue<T>(string key, out T value)
         {
-            return _inputs.TryGetValue(key, out value);
+            if (_inputs.ContainsKey(key))
+            {
+                try
+                {
+                    value = (T)_inputs[key];
+                    return true;
+                }
+                catch (Exception)
+                {
+                    value = default;
+                    return false;
+                }
+            }
+            value = default;
+            return false;
         }
 
         public (string Name, object Value)[] Inputs => _inputs.Select(x => (x.Key, x.Value)).ToArray();
