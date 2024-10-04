@@ -13,8 +13,8 @@ public class EffectSystemProperties
 {
     public Dictionary<string, (double Value, double MinValue, double MaxValue)> properties = new();
 
-    PropertyAddedCallback propertyAdded;
-    PropertyRemovedCallback propertyRemoved;
+    private PropertyAddedCallback propertyAdded;
+    private PropertyRemovedCallback propertyRemoved;
 
     public int Count
     {

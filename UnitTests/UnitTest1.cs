@@ -110,6 +110,25 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void MultiProcessMetaEffects()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            system.SetInput("health_add", 50);
+
+            Func<Dictionary<string, object>, Effect[]> metaFunction = (inputs)
+                => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
+
+            system.AddEffect(new MetaEffect(metaFunction));
+            system.Process();
+            system.Results["health"].Should().Be(150);
+            system.Process();
+            system.Results["health"].Should().Be(150);
+            system.Process();
+            system.Results["health"].Should().Be(150);
+        }
+
+        [TestMethod]
         public void MetaEffectsCreatingMetaEffects()
         {
             var system = new EffectSystem();
@@ -178,10 +197,10 @@ namespace UnitTests
             system.Properties.Add("health", 100, false);
 
             system.BasePipelines["health"].AddGroup("group", EffectOp.Add, EffectOp.Add);
-            system.BasePipelines["health"].EffectGroups.Count.Should().Be(1);
+            system.BasePipelines["health"].EffectGroups.Length.Should().Be(1);
 
             system.BasePipelines["health"].RemoveGroup("group");
-            system.BasePipelines["health"].EffectGroups.Count.Should().Be(0);
+            system.BasePipelines["health"].EffectGroups.Length.Should().Be(0);
         }
 
         [TestMethod]
