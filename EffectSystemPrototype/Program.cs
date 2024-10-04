@@ -1,4 +1,6 @@
-﻿internal class FlaskBelt
+﻿namespace EffectSystemPrototype;
+
+internal class FlaskBelt
 {
     public Effect[][]? flasks;
 }
@@ -22,9 +24,9 @@ internal class Program
         belt.flasks = new Effect[][] {
             new Effect[] { new ConstantEffect("speed", 1.4, "mul") }, // Quicksilver
             new Effect[] { 
-            new ConstantEffect("fire_res", 0.35, "add"),
-            new ConstantEffect("lightning_res", 0.35, "add"),
-            new ConstantEffect("cold_res", 0.35, "add")
+                new ConstantEffect("fire_res", 0.35, "add"),
+                new ConstantEffect("lightning_res", 0.35, "add"),
+                new ConstantEffect("cold_res", 0.35, "add")
             }, // Bismuth
             new Effect[] { new ConstantEffect("armour", 1500, "add") }, // Granite
         };
@@ -35,11 +37,11 @@ internal class Program
 
         Effect[] effects = // Alle aktiven Effekte
         {
-        new ConstantEffect("health", 50, "add"),
-        new ConstantEffect("health", 2, "mul"),
-        new ConstantEffect("mana", 2, "mul"),
-        new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
-        new MetaEffect(IntManaEffect), // Fügt 1 Mana pro 2 int hinzu
+            new ConstantEffect("health", 50, "add"),
+            new ConstantEffect("health", 2, "mul"),
+            new ConstantEffect("mana", 2, "mul"),
+            new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
+            new MetaEffect(IntManaEffect), // Fügt 1 Mana pro 2 int hinzu
         };
 
         foreach (Effect effect in effects)

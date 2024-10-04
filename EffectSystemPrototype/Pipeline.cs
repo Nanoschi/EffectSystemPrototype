@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EffectSystemPrototype;
 
-
-public class Pipeline
+internal class Pipeline
 {
-    public PipelineGroup[] EffectGroups => GroupNames.Values.ToArray();
+    public IPipelineGroup[] EffectGroups => GroupNames.Values.Cast<IPipelineGroup>().ToArray();
     public Dictionary<string, PipelineGroup> GroupNames { get; private set; } = new();
 
-    public Pipeline()
-    {
-        
-    }
-    public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Count); }
+    public int EffectCount => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Length);
 
     public double Calculate(double startValue, Dictionary<string, object> inputs)
     {
-        foreach (PipelineGroup group in EffectGroups)
+        foreach (var group in GroupNames.Values)
         {
             double value = group.Calculate(inputs);
             if (group.BaseOperator == EffectOp.Add)
@@ -73,4 +63,3 @@ public class Pipeline
 
 
 }
-

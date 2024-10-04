@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+namespace EffectSystemPrototype;
+
 public enum EffectOp
 {
     Add,
@@ -13,26 +15,26 @@ public enum EffectOp
 
 public abstract class Effect
 {
-    public static long MaxId = 0;
-    public long Id;
+    private static long _maxId;
+    public long Id { get; }
 
     protected Effect()
     {
-        MaxId++;
-        Id = MaxId;
+        _maxId++;
+        Id = _maxId;
     }
 }
 
 // Effekt, der eine Zahl liefert
 public abstract class ValueEffect : Effect
 {
-    public string Property;
-    public string GroupName;
+    public string Property { get; }
+    public string GroupName { get; }
 
     public ValueEffect(string property, string group)
     {
-        this.Property = property;
-        this.GroupName = group;
+        Property = property;
+        GroupName = group;
     }
 
     public abstract double GetValue(Dictionary<string, object> inputs);
@@ -42,7 +44,8 @@ public abstract class ValueEffect : Effect
 // Effekt, der eine feste Zahl liefert
 public class ConstantEffect : ValueEffect
 {
-    public double Value;
+    public double Value { get; }
+
     public ConstantEffect(string property, double value, string opGroup) : base(property, opGroup)
     {
         this.Value = value;
@@ -60,7 +63,7 @@ public class InputEffect : ValueEffect
     public Func<Dictionary<string, object>, double> effectFunction;
     public InputEffect(string property, Func<Dictionary<string, object>, double> function, string opGroup) : base(property, opGroup)
     {
-        this.effectFunction = function;
+        effectFunction = function;
     }
 
     public override double GetValue(Dictionary<string, object> inputs)
@@ -72,16 +75,15 @@ public class InputEffect : ValueEffect
 // Effekt, der andere Effekte erzeugt
 public class MetaEffect : Effect
 {
-    public Func<Dictionary<string, object>, Effect[]> metaFunction;
+    public Func<Dictionary<string, object>, Effect[]> MetaFunction { get; }
 
     public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction)
     {
-        this.metaFunction = metaFunction;
+        this.MetaFunction = metaFunction;
     }
 
     public Effect[] Execute(Dictionary<string, object> inputs)
     {
-        return metaFunction(inputs);
+        return MetaFunction(inputs);
     }
 }
-

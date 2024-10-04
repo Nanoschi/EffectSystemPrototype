@@ -1,9 +1,18 @@
-﻿public class PipelineGroup
+﻿namespace EffectSystemPrototype;
+
+public interface IPipelineGroup
 {
-    public List<ValueEffect> Effects { get; } = new();
+    ValueEffect[] Effects { get; }
+}
+
+public class PipelineGroup : IPipelineGroup
+{
+    private readonly List<ValueEffect> _effects = new();
+    public ValueEffect[] Effects => _effects.ToArray();
+
     public EffectOp BaseOperator;
     public EffectOp EffectOperator;
-
+    
     public PipelineGroup(EffectOp baseOp, EffectOp effectOp)
     {
         BaseOperator = baseOp;
@@ -25,12 +34,12 @@
 
     public void AddEffect(ValueEffect effect)
     {
-        Effects.Add(effect);
+        _effects.Add(effect);
     }
 
     public bool RemoveEffect(ValueEffect effect)
     {
-        return Effects.Remove(effect);
+        return _effects.Remove(effect);
     }
 
     public PipelineGroup Copy()
@@ -38,7 +47,7 @@
         PipelineGroup group = new(BaseOperator, EffectOperator);
         foreach (var effect in Effects)
         {
-            group.Effects.Add(effect);
+            group._effects.Add(effect);
         }
         return group;
     }

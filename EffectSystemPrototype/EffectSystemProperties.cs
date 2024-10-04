@@ -1,30 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EffectSystemPrototype;
 
-public delegate void PropertyAddedCallback(string name, bool autoGenGroups);
-public delegate void PropertyRemovedCallback(string name);
+internal delegate void PropertyAddedCallback(string name, bool autoGenGroups);
+internal delegate void PropertyRemovedCallback(string name);
 
 public class EffectSystemProperties
 {
     public Dictionary<string, (double Value, double MinValue, double MaxValue)> properties = new();
 
-    private PropertyAddedCallback propertyAdded;
-    private PropertyRemovedCallback propertyRemoved;
+    private readonly PropertyAddedCallback _propertyAdded;
+    private readonly PropertyRemovedCallback _propertyRemoved;
 
-    public int Count
-    {
-        get => properties.Count;
-    }
+    public int Count => properties.Count;
 
-    public EffectSystemProperties(PropertyAddedCallback propertyAdded, PropertyRemovedCallback propertyRemoved)
+    internal EffectSystemProperties(PropertyAddedCallback propertyAdded, PropertyRemovedCallback propertyRemoved)
     {
-        this.propertyAdded = propertyAdded;
-        this.propertyRemoved = propertyRemoved;
+        this._propertyAdded = propertyAdded;
+        this._propertyRemoved = propertyRemoved;
     }
 
     
@@ -37,7 +28,7 @@ public class EffectSystemProperties
     {
         if (properties.TryAdd(name, (value, min, max)))
         {
-            propertyAdded(name, autoGenGroups);
+            _propertyAdded(name, autoGenGroups);
         }
     }
 
@@ -45,7 +36,7 @@ public class EffectSystemProperties
     {
         if (properties.Remove(name))
         {
-            propertyRemoved(name);
+            _propertyRemoved(name);
         }
     }
 
@@ -112,10 +103,9 @@ public class EffectSystemProperties
     {
         return properties.Keys.ToArray();
     }
-
-    public EffectSystemProperties Copy()
+    internal EffectSystemProperties Copy()
     {
-        EffectSystemProperties copy = new(propertyAdded, propertyRemoved);
+        EffectSystemProperties copy = new(_propertyAdded, _propertyRemoved);
         foreach (var property in properties)
         {
             copy.properties[property.Key] = property.Value; 
@@ -130,4 +120,3 @@ public class EffectSystemProperties
     }
 
 }
-
