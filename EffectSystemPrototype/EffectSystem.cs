@@ -170,7 +170,7 @@ public class EffectSystem
         return _basePipelines[property].EffectGroups;
     }
 
-    public bool TryGetInputValue(string name, out object value)
+    public bool TryGetInputValue<T>(string name, out T value)
     {
         return _inputVector.TryGetValue(name, out value);
     }
