@@ -22,6 +22,11 @@ namespace EffectSystemPrototype
             return _inputs.Remove(name);
         }
 
+        public bool TryGetValue(string key, out object value)
+        {
+            return _inputs.TryGetValue(key, out value);
+        }
+
         public (string Name, object Value)[] Inputs => _inputs.Select(x => (x.Key, x.Value)).ToArray();
     }
 }

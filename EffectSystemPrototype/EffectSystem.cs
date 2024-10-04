@@ -1,4 +1,6 @@
-﻿namespace EffectSystemPrototype;
+﻿using System.Runtime.InteropServices;
+
+namespace EffectSystemPrototype;
 
 public class EffectSystem
 {
@@ -168,6 +170,11 @@ public class EffectSystem
     public IPipelineGroup[] GetGroups(string property)
     {
         return _basePipelines[property].EffectGroups;
+    }
+
+    public bool TryGetInputValue(string name, out object value)
+    {
+        return _inputVector.TryGetValue(name, out value);
     }
 }
         

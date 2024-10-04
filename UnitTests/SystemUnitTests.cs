@@ -14,9 +14,11 @@ namespace UnitTests
 
             system.InputVector.Should().HaveCount(1);
             system.InputVector.First().Should().Be(("last_kill_time", 1233434234234L));
+            system.TryGetInputValue("last_kill_time", out var value).Should().BeTrue();
+            value.Should().Be(1233434234234L);
 
             system.RemoveInput("last_kill_time");
-
+            system.TryGetInputValue("last_kill_time", out var value2).Should().BeFalse();
             system.InputVector.Should().HaveCount(0);
         }
 
