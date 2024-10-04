@@ -1,9 +1,10 @@
+using EffectSystemPrototype;
 using FluentAssertions;
 
 namespace UnitTests
 {
     [TestClass]
-    public class UnitTest1
+    public class SystemUnitTests
     {
         [TestMethod]
         public void AddRemoveProperties()
@@ -11,12 +12,12 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
 
-            system.BasePipelines.Count.Should().Be(1);
+            system.PipelineCount.Should().Be(1);
             system.Properties.Count.Should().Be(1);
 
             system.Properties.Remove("health");
 
-            system.BasePipelines.Count.Should().Be(0);
+            system.PipelineCount.Should().Be(0);
             system.Properties.Count.Should().Be(0);
         }
 
@@ -28,10 +29,10 @@ namespace UnitTests
             var effect = new ConstantEffect("health", 50, "add");
             
             system.AddEffect(effect);
-            system.BasePipelines["health"].GroupNames["add"].Effects.Count.Should().Be(1);
+            system.GetEffectsOfGroup("health", "add").Length.Should().Be(1);
 
             system.RemoveEffect(effect);
-            system.BasePipelines["health"].GroupNames["add"].Effects.Count.Should().Be(0);
+            system.GetEffectsOfGroup("health", "add").Length.Should().Be(0);
         }
 
         [TestMethod]
@@ -196,11 +197,11 @@ namespace UnitTests
             var system = new EffectSystem();
             system.Properties.Add("health", 100, false);
 
-            system.BasePipelines["health"].AddGroup("group", EffectOp.Add, EffectOp.Add);
-            system.BasePipelines["health"].EffectGroups.Length.Should().Be(1);
+            system.AddGroup("health","group", EffectOp.Add, EffectOp.Add);
+            system.GetGroups("health").Length.Should().Be(1);
 
-            system.BasePipelines["health"].RemoveGroup("group");
-            system.BasePipelines["health"].EffectGroups.Length.Should().Be(0);
+            system.RemoveGroup("health", "group");
+            system.GetGroups("health").Length.Should().Be(0);
         }
 
         [TestMethod]
@@ -209,8 +210,8 @@ namespace UnitTests
             //https://www.pathofexile.com/forum/view-thread/261646
             var system = new EffectSystem();
             system.Properties.Add("energy_shield", 100, false);
-            system.BasePipelines["energy_shield"].AddGroup("increased", EffectOp.Mul, EffectOp.Add);
-            system.BasePipelines["energy_shield"].AddGroup("more", EffectOp.Mul, EffectOp.Mul);
+            system.AddGroup("energy_shield", "increased", EffectOp.Mul, EffectOp.Add);
+            system.AddGroup("energy_shield", "more", EffectOp.Mul, EffectOp.Mul);
 
             system.AddEffect(new ConstantEffect("energy_shield", 1, "increased"));
             system.AddEffect(new ConstantEffect("energy_shield", 0.2, "increased"));
@@ -228,11 +229,11 @@ namespace UnitTests
         public void AddRemoveThresholdValue()
         {
             var system = new EffectSystem();
-            system.EffectThresholds.AddValue("time");
-            system.EffectThresholds.Thresholds.Count.Should().Be(1);
+            system.Thresholds.AddValue("time");
+            system.Thresholds.Thresholds.Count.Should().Be(1);
 
-            system.EffectThresholds.RemoveValue("time");
-            system.EffectThresholds.Thresholds.Count.Should().Be(0);
+            system.Thresholds.RemoveValue("time");
+            system.Thresholds.Thresholds.Count.Should().Be(0);
         }
 
         [TestMethod]
@@ -240,16 +241,16 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.EffectThresholds.AddValue("time", 0);
+            system.Thresholds.AddValue("time", 0);
             var effect = new ConstantEffect("health", 100, "add");
             system.AddEffect(effect);
-            system.EffectThresholds.AddEffect(effect, "time", 1, LimitDirection.Max);
+            system.Thresholds.AddEffect(effect, "time", 1, LimitDirection.Max);
 
-            system.EffectThresholds.IncValue("time", 0.5);
+            system.Thresholds.IncValue("time", 0.5);
             system.Process();
             system.Results["health"].Should().Be(200);
 
-            system.EffectThresholds.IncValue("time", 1.5);
+            system.Thresholds.IncValue("time", 1.5);
             system.Process();
             system.Results["health"].Should().Be(100);
         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿namespace EffectSystemPrototype;
 
 public class Pipeline
 {
@@ -15,7 +9,7 @@ public class Pipeline
     {
         
     }
-    public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Count); }
+    public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Length); }
 
     public double Calculate(double startValue, Dictionary<string, object> inputs)
     {
@@ -73,4 +67,3 @@ public class Pipeline
 
 
 }
-

@@ -1,16 +1,17 @@
-﻿public class EffectSystem
+﻿namespace EffectSystemPrototype;
+
+public class EffectSystem
 {
     private readonly EffectSystemProperties _baseProperties; // Basiswerte
     private EffectSystemProperties _processedProperties; // Endwerte
-    public Dictionary<string, Pipeline> BasePipelines { get; } = new();
-    public Dictionary<string, Pipeline> ProcessedPipelines { get; private set; } = new();
-    
-    public List<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
-    
-    public Dictionary<string, object> Inputs = new();
+    private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
+    private readonly Dictionary<string, Pipeline> _basePipelines  = new();
+    private Dictionary<string, Pipeline> _processedPipelines  = new();
+    private readonly Dictionary<string, object> _inputs = new();
 
     public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> TimedValueNodes = new();
     public List<(LinkedListNode<MetaEffect> effect_node, double end_time)> TimedMetaNodes = new();
+    public int PipelineCount => _basePipelines.Count;
 
     public EffectSystemThresholds EffectThresholds = new ();
 
@@ -18,16 +19,23 @@
     public EffectSystemProperties Results { get => _processedProperties; }
     public EffectSystemThresholds Thresholds { get => EffectThresholds; }
 
+    public MetaEffect[] MetaEffects => _metaEffects.ToArray();
+
+    public (string Name, object Value)[] Inputs => _inputs.Select(x => (x.Key, x.Value)).ToArray();
+
     public EffectSystem()
     {
         _baseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
         _processedProperties = _baseProperties.Copy();
     }
 
-
+    public ValueEffect[] GetEffectsOfGroup(string property, string group)
+    {
+        return _basePipelines[property].GroupNames[group].Effects.ToArray();
+    }
     public void AddEffect(Effect effect, double duration = 0)
     {
-        AddEffect(effect, BasePipelines);
+        AddEffect(effect, _basePipelines);
     }
 
     private void AddEffect(Effect effect, Dictionary<string, Pipeline> pipelines)
@@ -39,19 +47,19 @@
 
         if (effect is MetaEffect metaEffect)
         {
-            MetaEffects.Add(metaEffect);
+            _metaEffects.Add(metaEffect);
         }
     }
 
     public void SetInput(string name, object value)
     {
-        if (!Inputs.ContainsKey(name))
+        if (!_inputs.ContainsKey(name))
         {
-            Inputs.Add(name, value);
+            _inputs.Add(name, value);
         }
         else
         {
-            Inputs[name] = value;
+            _inputs[name] = value;
         }
 
     }
@@ -60,7 +68,7 @@
     {
         var allProperties = _baseProperties.GetPropertyArray();
         _processedProperties = _baseProperties.Copy();
-        EffectThresholds.RemoveOutOfThreshold(this);
+        Thresholds.RemoveOutOfThreshold(this);
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
         var newMetaEffects = new List<MetaEffect>(MetaEffects);
@@ -73,7 +81,7 @@
         foreach (string property in allProperties)
         {
             double baseValue = _baseProperties.GetValue(property);
-            _processedProperties[property] = ProcessedPipelines[property].Calculate(baseValue, Inputs);
+            _processedProperties[property] = _processedPipelines[property].Calculate(baseValue, _inputs);
         }
     }
 
@@ -92,13 +100,13 @@
 
     private bool RemoveValueEffect(ValueEffect effect)
     {
-        var pipeline = BasePipelines[effect.Property];
+        var pipeline = _basePipelines[effect.Property];
         return pipeline.RemoveEffect(effect);
     }
 
     private bool RemoveMetaEffect(MetaEffect effect)
     {
-        return MetaEffects.Remove(effect);
+        return _metaEffects.Remove(effect);
     }
 
     private List<MetaEffect> ApplyMetaEffects(List<MetaEffect> metaEffects)
@@ -106,7 +114,7 @@
         List<MetaEffect> newMetaEffects = new();
         foreach (MetaEffect metaEffect in metaEffects)
         {
-            Effect[] newEffects = metaEffect.Execute(Inputs);
+            var newEffects = metaEffect.Execute(_inputs);
             foreach (Effect effect in newEffects)
             {
                 if (effect is MetaEffect newMetaEffect)
@@ -115,7 +123,7 @@
                 }
                 else
                 {
-                    AddEffect(effect, ProcessedPipelines);
+                    AddEffect(effect, _processedPipelines);
                 }
             }
         }
@@ -124,17 +132,17 @@
 
     private void CopyPipelinesToProcessed()
     {
-        ProcessedPipelines = new();
-        foreach (var propertyKv in BasePipelines)
+        _processedPipelines = new();
+        foreach (var propertyKv in _basePipelines)
         {
-            ProcessedPipelines.Add(propertyKv.Key, propertyKv.Value.Copy());
+            _processedPipelines.Add(propertyKv.Key, propertyKv.Value.Copy());
         }
     }
 
     private void OnPropertyAdded(string name, bool autoGenGroups)
     {
         Pipeline pipeline = new();
-        BasePipelines[name] = pipeline;
+        _basePipelines[name] = pipeline;
         if (autoGenGroups)
         {
             AutoGenerateGroups(name);
@@ -143,13 +151,28 @@
 
     private void OnPropertyRemoved(string name)
     {
-        BasePipelines.Remove(name);
+        _basePipelines.Remove(name);
     }
 
     private void AutoGenerateGroups(string property)
     {
-        BasePipelines[property].AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
-        BasePipelines[property].AddGroup("add", EffectOp.Add, EffectOp.Add);
+        _basePipelines[property].AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
+        _basePipelines[property].AddGroup("add", EffectOp.Add, EffectOp.Add);
+    }
+
+    public void AddGroup(string property, string group, EffectOp baseOp, EffectOp effectOp)
+    {
+        _basePipelines[property].AddGroup(group, baseOp, effectOp);
+    }
+
+    public void RemoveGroup(string property, string group)
+    {
+        _basePipelines[property].RemoveGroup(group);
+    }
+
+    public IPipelineGroup[] GetGroups(string property)
+    {
+        return _basePipelines[property].EffectGroups.Cast<IPipelineGroup>().ToArray();
     }
 }
-
+        
