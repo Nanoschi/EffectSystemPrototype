@@ -9,8 +9,6 @@ public class EffectSystem
     private Dictionary<string, Pipeline> _processedPipelines  = new();
     private readonly Dictionary<string, object> _inputs = new();
 
-    public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> TimedValueNodes = new();
-    public List<(LinkedListNode<MetaEffect> effect_node, double end_time)> TimedMetaNodes = new();
     public int PipelineCount => _basePipelines.Count;
 
     public EffectSystemThresholds EffectThresholds = new ();
@@ -172,7 +170,7 @@ public class EffectSystem
 
     public IPipelineGroup[] GetGroups(string property)
     {
-        return _basePipelines[property].EffectGroups.Cast<IPipelineGroup>().ToArray();
+        return _basePipelines[property].EffectGroups;
     }
 }
         
