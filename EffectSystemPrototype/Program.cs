@@ -60,10 +60,9 @@ internal class Program
 
     private static Effect[] MagebloodEffect(InputVector inputsVector)
     {
-        if (inputsVector.Contains("belt")) {
-            FlaskBelt belt = inputsVector["belt"] as FlaskBelt;
+        if (inputsVector.TryGetValue("belt", out var flaskBelt)) {
             List<Effect> effects = new List<Effect>();
-            foreach (var flask in belt.flasks)
+            foreach (var flask in ((FlaskBelt)flaskBelt).flasks)
             {
                 foreach(var effect in flask)
                 {
@@ -77,10 +76,9 @@ internal class Program
 
     private static Effect[] IntManaEffect(InputVector inputsVector)
     {
-        if (inputsVector.Contains("int"))
+        if (inputsVector.TryGetValue("int", out var intValue))
         {
-            int intelligence = (int)inputsVector["int"];
-            return new Effect[] { new ConstantEffect("mana", intelligence / 2, "add") };
+            return new Effect[] { new ConstantEffect("mana", (int)intValue / 2, "add") };
         }
         return new Effect[] { };
     }
