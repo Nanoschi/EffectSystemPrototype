@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace EffectSystemPrototype
+﻿namespace EffectSystemPrototype
 {
     public class InputVector
     {

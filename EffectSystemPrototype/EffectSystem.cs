@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace EffectSystemPrototype;
+﻿namespace EffectSystemPrototype;
 
 public class EffectSystem
 {
