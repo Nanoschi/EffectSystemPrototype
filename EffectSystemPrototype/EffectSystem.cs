@@ -1,10 +1,12 @@
 ﻿public class EffectSystem
 {
-    EffectSystemProperties BaseProperties; // Basiswerte
-    EffectSystemProperties ProcessedProperties; // Endwerte
-    public Dictionary<string, Pipeline> BasePipelines = new(); // Basis Zahleneffekte
-    public Dictionary<string, Pipeline> ProcessedPipelines = new(); // End Zahleneffekte
-    public LinkedList<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
+    private readonly EffectSystemProperties _baseProperties; // Basiswerte
+    private EffectSystemProperties _processedProperties; // Endwerte
+    public Dictionary<string, Pipeline> BasePipelines { get; } = new();
+    public Dictionary<string, Pipeline> ProcessedPipelines { get; private set; } = new();
+    
+    public List<MetaEffect> MetaEffects = new(); // Effekte, die Effekte erzeugen
+    
     public Dictionary<string, object> Inputs = new();
 
     public List<(LinkedListNode<ValueEffect> effect_node, Pipeline pipeline, double end_time)> TimedValueNodes = new();
@@ -12,14 +14,14 @@
 
     public EffectSystemThresholds EffectThresholds = new ();
 
-    public EffectSystemProperties Properties { get => BaseProperties; }
-    public EffectSystemProperties Results { get => ProcessedProperties; }
+    public EffectSystemProperties Properties { get => _baseProperties; }
+    public EffectSystemProperties Results { get => _processedProperties; }
     public EffectSystemThresholds Thresholds { get => EffectThresholds; }
 
     public EffectSystem()
     {
-        BaseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
-        ProcessedProperties = BaseProperties.Copy();
+        _baseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
+        _processedProperties = _baseProperties.Copy();
     }
 
 
@@ -28,7 +30,7 @@
         AddEffect(effect, BasePipelines);
     }
 
-    void AddEffect(Effect effect, Dictionary<string, Pipeline> pipelines)
+    private void AddEffect(Effect effect, Dictionary<string, Pipeline> pipelines)
     {
         if (effect is ValueEffect valueEffect)
         {
@@ -37,7 +39,7 @@
 
         if (effect is MetaEffect metaEffect)
         {
-            MetaEffects.AddLast(metaEffect);
+            MetaEffects.Add(metaEffect);
         }
     }
 
@@ -56,23 +58,22 @@
 
     public void Process()
     {
-        var allProperties = BaseProperties.GetPropertyArray();
-        ProcessedProperties = BaseProperties.Copy();
+        var allProperties = _baseProperties.GetPropertyArray();
+        _processedProperties = _baseProperties.Copy();
         EffectThresholds.RemoveOutOfThreshold(this);
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
-        LinkedList<MetaEffect> newMetaEffects = MetaEffects;
+        var newMetaEffects = new List<MetaEffect>(MetaEffects);
         do
         {
             newMetaEffects =  ApplyMetaEffects(newMetaEffects); // Gibt Meta Effekte zurück, die von Meta effekten erzeugt wurden
         }
         while (newMetaEffects.Count > 0);
 
-
         foreach (string property in allProperties)
         {
-            double baseValue = BaseProperties.GetValue(property);
-            ProcessedProperties[property] = ProcessedPipelines[property].Calculate(baseValue, Inputs);
+            double baseValue = _baseProperties.GetValue(property);
+            _processedProperties[property] = ProcessedPipelines[property].Calculate(baseValue, Inputs);
         }
     }
 
@@ -84,34 +85,25 @@
         }
         else if (effect is MetaEffect metaEffect)
         {
-            return RemoveMetaEffect(metaEffect.Id);
+            return RemoveMetaEffect(metaEffect);
         }
         return false;
     }
 
-    bool RemoveValueEffect(ValueEffect effect)
+    private bool RemoveValueEffect(ValueEffect effect)
     {
         var pipeline = BasePipelines[effect.Property];
         return pipeline.RemoveEffect(effect);
     }
 
-    bool RemoveMetaEffect(long effect_id)
+    private bool RemoveMetaEffect(MetaEffect effect)
     {
-        var node = MetaEffects.First;
-        for (int i = 0; i < MetaEffects.Count; i++)
-        {
-            if (node.Value.Id == effect_id)
-            {
-                MetaEffects.Remove(node);
-                return true;
-            }
-        }
-        return false;
+        return MetaEffects.Remove(effect);
     }
 
-    LinkedList<MetaEffect> ApplyMetaEffects(LinkedList<MetaEffect> metaEffects)
+    private List<MetaEffect> ApplyMetaEffects(List<MetaEffect> metaEffects)
     {
-        LinkedList<MetaEffect> newMetaEffects = new();
+        List<MetaEffect> newMetaEffects = new();
         foreach (MetaEffect metaEffect in metaEffects)
         {
             Effect[] newEffects = metaEffect.Execute(Inputs);
@@ -119,7 +111,7 @@
             {
                 if (effect is MetaEffect newMetaEffect)
                 {
-                    newMetaEffects.AddLast(newMetaEffect);
+                    newMetaEffects.Add(newMetaEffect);
                 }
                 else
                 {
@@ -130,7 +122,7 @@
         return newMetaEffects;
     }
 
-    void CopyPipelinesToProcessed()
+    private void CopyPipelinesToProcessed()
     {
         ProcessedPipelines = new();
         foreach (var propertyKv in BasePipelines)
@@ -139,7 +131,7 @@
         }
     }
 
-    void OnPropertyAdded(string name, bool autoGenGroups)
+    private void OnPropertyAdded(string name, bool autoGenGroups)
     {
         Pipeline pipeline = new();
         BasePipelines[name] = pipeline;
@@ -149,12 +141,12 @@
         }
     }
 
-    void OnPropertyRemoved(string name)
+    private void OnPropertyRemoved(string name)
     {
         BasePipelines.Remove(name);
     }
 
-    void AutoGenerateGroups(string property)
+    private void AutoGenerateGroups(string property)
     {
         BasePipelines[property].AddGroup("mul", EffectOp.Mul, EffectOp.Mul);
         BasePipelines[property].AddGroup("add", EffectOp.Add, EffectOp.Add);

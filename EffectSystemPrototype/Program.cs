@@ -1,10 +1,10 @@
-﻿class FlaskBelt
+﻿internal class FlaskBelt
 {
     public Effect[][]? flasks;
 }
 
 
-class Program
+internal class Program
 {
     public static void Main()
     {
@@ -56,7 +56,7 @@ class Program
         }
     }
 
-    static Effect[] MagebloodEffect(Dictionary<string, object> inputs)
+    private static Effect[] MagebloodEffect(Dictionary<string, object> inputs)
     {
         if (inputs.ContainsKey("belt")) {
             FlaskBelt belt = inputs["belt"] as FlaskBelt;
@@ -73,7 +73,7 @@ class Program
         return new Effect[] { };
     }
 
-    static Effect[] IntManaEffect(Dictionary<string, object> inputs)
+    private static Effect[] IntManaEffect(Dictionary<string, object> inputs)
     {
         if (inputs.ContainsKey("int"))
         {

@@ -1,61 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 
-public class PipelineGroup
-{
-    public LinkedList<ValueEffect> Effects = new();
-    public EffectOp BaseOperator;
-    public EffectOp EffectOperator;
-
-    public PipelineGroup(EffectOp baseOp, EffectOp effectOp)
-    {
-        BaseOperator = baseOp;
-        EffectOperator = effectOp;
-    }
-
-    public double Calculate(Dictionary<string, object> inputs)
-    {
-        if (EffectOperator == EffectOp.Add)
-        {
-            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputs));
-        }
-        else if (EffectOperator == EffectOp.Mul)
-        {
-            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputs));
-        }
-        return 0;
-    }
-
-    public void AddEffect(ValueEffect effect)
-    {
-        Effects.AddLast(effect);
-    }
-
-    public bool RemoveEffect(ValueEffect effect)
-    {
-        return Effects.Remove(effect);
-    }
-
-    public PipelineGroup Copy()
-    {
-        PipelineGroup newList = new(BaseOperator, EffectOperator);
-        foreach (var effect in Effects)
-        {
-            newList.Effects.AddLast(effect);
-        }
-        return newList;
-    }
-}
-
 public class Pipeline
 {
-    public List<PipelineGroup> EffectGroups = new();
-    public Dictionary<string, PipelineGroup> GroupNames = new();
+    public PipelineGroup[] EffectGroups => GroupNames.Values.ToArray();
+    public Dictionary<string, PipelineGroup> GroupNames { get; private set; } = new();
 
+    public Pipeline()
+    {
+        
+    }
     public int EffectCount { get => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Count); }
 
     public double Calculate(double startValue, Dictionary<string, object> inputs)
@@ -96,24 +55,19 @@ public class Pipeline
     {
         PipelineGroup newGroup = new(baseOp, effectOp);
         GroupNames.Add(name, newGroup);
-        EffectGroups.Add(newGroup);
     }
 
     public bool RemoveGroup(string name)
     {
-        var group = GroupNames[name];
-        EffectGroups.Remove(group);
         return GroupNames.Remove(name);
     }
 
     public Pipeline Copy()
     {
         Pipeline copy = new();
-        foreach (PipelineGroup group in EffectGroups)
-        {
-            copy.EffectGroups.Add(group);
-        }
-        copy.GroupNames = GroupNames;
+        var kvpCopies = GroupNames.ToArray().Select(x => new KeyValuePair<string, PipelineGroup>(x.Key, x.Value.Copy()));
+        copy.GroupNames = new Dictionary<string, PipelineGroup>(kvpCopies);
+       
         return copy;
     }
 
