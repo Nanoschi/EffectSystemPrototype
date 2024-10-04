@@ -58,10 +58,10 @@ internal class Program
         }
     }
 
-    private static Effect[] MagebloodEffect(Dictionary<string, object> inputs)
+    private static Effect[] MagebloodEffect(InputVector inputsVector)
     {
-        if (inputs.ContainsKey("belt")) {
-            FlaskBelt belt = inputs["belt"] as FlaskBelt;
+        if (inputsVector.Contains("belt")) {
+            FlaskBelt belt = inputsVector["belt"] as FlaskBelt;
             List<Effect> effects = new List<Effect>();
             foreach (var flask in belt.flasks)
             {
@@ -75,11 +75,11 @@ internal class Program
         return new Effect[] { };
     }
 
-    private static Effect[] IntManaEffect(Dictionary<string, object> inputs)
+    private static Effect[] IntManaEffect(InputVector inputsVector)
     {
-        if (inputs.ContainsKey("int"))
+        if (inputsVector.Contains("int"))
         {
-            int intelligence = (int)inputs["int"];
+            int intelligence = (int)inputsVector["int"];
             return new Effect[] { new ConstantEffect("mana", intelligence / 2, "add") };
         }
         return new Effect[] { };

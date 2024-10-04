@@ -7,7 +7,7 @@ public class EffectSystem
     private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
     private readonly Dictionary<string, Pipeline> _basePipelines  = new();
     private Dictionary<string, Pipeline> _processedPipelines  = new();
-    private readonly Dictionary<string, object> _inputs = new();
+    private readonly InputVector _inputVector = new();
 
     public int PipelineCount => _basePipelines.Count;
 
@@ -19,7 +19,7 @@ public class EffectSystem
 
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
-    public (string Name, object Value)[] Inputs => _inputs.Select(x => (x.Key, x.Value)).ToArray();
+    public (string Name, object Value)[] InputVector => _inputVector.Inputs.ToArray();
 
     public EffectSystem()
     {
@@ -51,15 +51,12 @@ public class EffectSystem
 
     public void SetInput(string name, object value)
     {
-        if (!_inputs.ContainsKey(name))
-        {
-            _inputs.Add(name, value);
-        }
-        else
-        {
-            _inputs[name] = value;
-        }
+        _inputVector[name] = value;
+    }
 
+    public bool RemoveInput(string name)
+    {
+        return _inputVector.Remove(name);
     }
 
     public void Process()
@@ -79,7 +76,7 @@ public class EffectSystem
         foreach (string property in allProperties)
         {
             double baseValue = _baseProperties.GetValue(property);
-            _processedProperties[property] = _processedPipelines[property].Calculate(baseValue, _inputs);
+            _processedProperties[property] = _processedPipelines[property].Calculate(baseValue, _inputVector);
         }
     }
 
@@ -112,7 +109,7 @@ public class EffectSystem
         List<MetaEffect> newMetaEffects = new();
         foreach (MetaEffect metaEffect in metaEffects)
         {
-            var newEffects = metaEffect.Execute(_inputs);
+            var newEffects = metaEffect.Execute(_inputVector);
             foreach (Effect effect in newEffects)
             {
                 if (effect is MetaEffect newMetaEffect)

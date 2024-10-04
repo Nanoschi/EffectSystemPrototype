@@ -7,6 +7,21 @@ namespace UnitTests
     public class SystemUnitTests
     {
         [TestMethod]
+        public void AddRemoveInput()
+        {
+            var system = new EffectSystem();
+            system.SetInput("last_kill_time", 1233434234234L);
+
+            system.InputVector.Should().HaveCount(1);
+            system.InputVector.First().Should().Be(("last_kill_time", 1233434234234L));
+
+            system.RemoveInput("last_kill_time");
+
+            system.InputVector.Should().HaveCount(0);
+        }
+
+
+        [TestMethod]
         public void AddRemoveProperties()
         {
             var system = new EffectSystem();
@@ -29,10 +44,10 @@ namespace UnitTests
             var effect = new ConstantEffect("health", 50, "add");
             
             system.AddEffect(effect);
-            system.GetEffectsOfGroup("health", "add").Length.Should().Be(1);
+            system.GetEffectsOfGroup("health", "add").Should().HaveCount(1);
 
             system.RemoveEffect(effect);
-            system.GetEffectsOfGroup("health", "add").Length.Should().Be(0);
+            system.GetEffectsOfGroup("health", "add").Should().HaveCount(0);
         }
 
         [TestMethod]
@@ -85,7 +100,7 @@ namespace UnitTests
             var system = new EffectSystem();
             system.SetInput("intelligence", 300);
 
-            Func<Dictionary<string, object>, double> effectFunction = (input) => (int)input["intelligence"] * 0.5;
+            Func<InputVector, double> effectFunction = (input) => (int)input["intelligence"] * 0.5;
 
             system.Properties.Add("mana", 100);
             system.AddEffect(new InputEffect("mana", effectFunction, "add"));
@@ -102,7 +117,7 @@ namespace UnitTests
             system.Properties.Add("health", 100);
             system.SetInput("health_add", 50);
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction = (inputs)
+            Func<InputVector, Effect[]> metaFunction = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add")};
 
             system.AddEffect(new MetaEffect(metaFunction));
@@ -117,7 +132,7 @@ namespace UnitTests
             system.Properties.Add("health", 100);
             system.SetInput("health_add", 50);
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction = (inputs)
+            Func<InputVector, Effect[]> metaFunction = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
 
             system.AddEffect(new MetaEffect(metaFunction));
@@ -136,10 +151,10 @@ namespace UnitTests
             system.Properties.Add("health", 100);
             system.SetInput("health_add", 50);
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction2 = (inputs)
+            Func<InputVector, Effect[]> metaFunction2 = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction1 = (inputs)
+            Func<InputVector, Effect[]> metaFunction1 = (inputs)
                 => new[] { new MetaEffect(metaFunction2) };
 
             system.AddEffect(new MetaEffect(metaFunction1));
@@ -155,10 +170,10 @@ namespace UnitTests
             system.Properties.Add("health", 100);
             system.SetInput("health_add", 50);
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction2 = (inputs)
+            Func<InputVector, Effect[]> metaFunction2 = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
 
-            Func<Dictionary<string, object>, Effect[]> metaFunction1 = (inputs)
+            Func<InputVector, Effect[]> metaFunction1 = (inputs)
                 => new Effect[] { 
                     new MetaEffect(metaFunction2), 
                     new ConstantEffect("health", 1, "add"),
