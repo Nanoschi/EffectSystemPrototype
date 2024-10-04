@@ -12,7 +12,6 @@ public enum EffectOp
     Mul
 }
 
-
 public abstract class Effect
 {
     private static long _maxId;
@@ -37,7 +36,7 @@ public abstract class ValueEffect : Effect
         GroupName = group;
     }
 
-    public abstract double GetValue(Dictionary<string, object> inputs);
+    public abstract double GetValue(InputVector inputsVector);
 
 }
 
@@ -51,7 +50,7 @@ public class ConstantEffect : ValueEffect
         this.Value = value;
     }
 
-    public override double GetValue(Dictionary<string, object> inputs)
+    public override double GetValue(InputVector inputsVector)
     {
         return Value;
     }
@@ -60,30 +59,30 @@ public class ConstantEffect : ValueEffect
 // Effekt, der eine Zahl auf Basis von input werten liefert
 public class InputEffect : ValueEffect
 {
-    public Func<Dictionary<string, object>, double> effectFunction;
-    public InputEffect(string property, Func<Dictionary<string, object>, double> function, string opGroup) : base(property, opGroup)
+    public Func<InputVector, double> effectFunction;
+    public InputEffect(string property, Func<InputVector, double> function, string opGroup) : base(property, opGroup)
     {
         effectFunction = function;
     }
 
-    public override double GetValue(Dictionary<string, object> inputs)
+    public override double GetValue(InputVector inputsVector)
     {
-        return effectFunction(inputs);
+        return effectFunction(inputsVector);
     }
 }
 
 // Effekt, der andere Effekte erzeugt
 public class MetaEffect : Effect
 {
-    public Func<Dictionary<string, object>, Effect[]> MetaFunction { get; }
+    public Func<InputVector, Effect[]> MetaFunction { get; }
 
-    public MetaEffect(Func<Dictionary<string, object>, Effect[]> metaFunction)
+    public MetaEffect(Func<InputVector, Effect[]> metaFunction)
     {
         this.MetaFunction = metaFunction;
     }
 
-    public Effect[] Execute(Dictionary<string, object> inputs)
+    public Effect[] Execute(InputVector inputsVector)
     {
-        return MetaFunction(inputs);
+        return MetaFunction(inputsVector);
     }
 }

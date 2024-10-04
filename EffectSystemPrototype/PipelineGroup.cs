@@ -19,15 +19,15 @@ public class PipelineGroup : IPipelineGroup
         EffectOperator = effectOp;
     }
 
-    public double Calculate(Dictionary<string, object> inputs)
+    public double Calculate(InputVector inputsVector)
     {
         if (EffectOperator == EffectOp.Add)
         {
-            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputs));
+            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
         }
         else if (EffectOperator == EffectOp.Mul)
         {
-            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputs));
+            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
         }
         return 0;
     }

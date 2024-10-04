@@ -7,11 +7,11 @@ internal class Pipeline
 
     public int EffectCount => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Length);
 
-    public double Calculate(double startValue, Dictionary<string, object> inputs)
+    public double Calculate(double startValue, InputVector inputsVector)
     {
         foreach (var group in GroupNames.Values)
         {
-            double value = group.Calculate(inputs);
+            double value = group.Calculate(inputsVector);
             if (group.BaseOperator == EffectOp.Add)
             {
                 startValue += value;
