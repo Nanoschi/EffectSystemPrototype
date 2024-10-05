@@ -50,7 +50,7 @@
             return this;
         }
 
-        public void Build()
+        public void Add()
         {
             _effectSystem.InternalAddGroupConfig(this);
         }

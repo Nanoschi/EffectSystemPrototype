@@ -288,7 +288,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             
-            system.AddConfig("energy_shield", 100)
+            system.CreateConfig("energy_shield", 100)
                 .AddGroup("increased", EffectOp.Mul, EffectOp.Add)
                 .AddGroup("more", EffectOp.Mul, EffectOp.Mul)
                 .AddConstantEffect(1, "increased")
@@ -296,7 +296,7 @@ namespace UnitTests
                 .AddConstantEffect(0.3, "increased")
                 .AddConstantEffect(1.1, "more")
                 .AddConstantEffect(1.2, "more")
-                .Build();
+                .Add();
 
             system.Process();
             system.Results["energy_shield"].Should().Be(198);

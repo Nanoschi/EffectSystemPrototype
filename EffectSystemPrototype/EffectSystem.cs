@@ -175,7 +175,7 @@ public class EffectSystem
         return _inputVector.TryGetValue(name, out value);
     }
 
-    public GroupConfiguration AddConfig(string property, double value)
+    public GroupConfiguration CreateConfig(string property, double value)
     {
         return new GroupConfiguration(property, value, this);
     }
