@@ -282,5 +282,24 @@ namespace UnitTests
             system.Process();
             system.Results["health"].Should().Be(100);
         }
+
+        [TestMethod]
+        public void AddConfig()
+        {
+            var system = new EffectSystem();
+            
+            system.AddConfig("energy_shield", 100)
+                .AddGroup("increased", EffectOp.Mul, EffectOp.Add)
+                .AddGroup("more", EffectOp.Mul, EffectOp.Mul)
+                .AddConstantEffect(1, "increased")
+                .AddConstantEffect(0.2, "increased")
+                .AddConstantEffect(0.3, "increased")
+                .AddConstantEffect(1.1, "more")
+                .AddConstantEffect(1.2, "more")
+                .Build();
+
+            system.Process();
+            system.Results["energy_shield"].Should().Be(198);
+        }
     }
 }
