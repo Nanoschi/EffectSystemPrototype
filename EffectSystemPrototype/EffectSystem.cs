@@ -5,8 +5,8 @@ public class EffectSystem
     private readonly EffectSystemProperties _baseProperties; // Basiswerte
     private EffectSystemProperties _processedProperties; // Endwerte
     private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
-    private readonly Dictionary<string, Pipeline> _basePipelines  = new();
-    private Dictionary<string, Pipeline> _processedPipelines  = new();
+    private readonly EffectSystemPipelines _basePipelines  = new();
+    private EffectSystemPipelines _processedPipelines  = new();
     private readonly InputVector _inputVector = new();
 
     public int PipelineCount => _basePipelines.Count;
@@ -36,7 +36,7 @@ public class EffectSystem
         AddEffect(effect, _basePipelines);
     }
 
-    private void AddEffect(Effect effect, Dictionary<string, Pipeline> pipelines)
+    private void AddEffect(Effect effect, EffectSystemPipelines pipelines)
     {
         if (effect is ValueEffect valueEffect)
         {
@@ -128,10 +128,7 @@ public class EffectSystem
     private void CopyPipelinesToProcessed()
     {
         _processedPipelines = new();
-        foreach (var propertyKv in _basePipelines)
-        {
-            _processedPipelines.Add(propertyKv.Key, propertyKv.Value.Copy());
-        }
+        _processedPipelines = _basePipelines.Copy();
     }
 
     private void OnPropertyAdded(string name, bool autoGenGroups)
