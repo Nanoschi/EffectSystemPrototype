@@ -174,5 +174,24 @@ public class EffectSystem
     {
         return _inputVector.TryGetValue(name, out value);
     }
+
+    public GroupConfiguration CreateConfig(string property, double value)
+    {
+        return new GroupConfiguration(property, value, this);
+    }
+
+    internal void InternalAddGroupConfig(GroupConfiguration configuration)
+    {
+        Properties.Add(configuration.Property, configuration.Value, false);
+        foreach (var grp in configuration.PipelineGroups)
+        {
+            AddGroup(configuration.Property,grp.Name, grp.PipelineGroup.BaseOperator, grp.PipelineGroup.EffectOperator);
+        }
+
+        foreach (var effect in configuration.Effects)
+        {
+            AddEffect(effect);
+        }
+    }
 }
         
