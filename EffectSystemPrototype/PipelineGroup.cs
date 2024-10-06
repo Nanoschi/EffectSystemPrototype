@@ -23,11 +23,11 @@ public class PipelineGroup : IPipelineGroup
     {
         if (EffectOperator == EffectOp.Add)
         {
-            return Effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
+            return _effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
         }
         else if (EffectOperator == EffectOp.Mul)
         {
-            return Effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
+            return _effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
         }
         return 0;
     }
