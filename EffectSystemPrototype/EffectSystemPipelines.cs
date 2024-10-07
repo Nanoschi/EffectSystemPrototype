@@ -9,9 +9,10 @@ namespace EffectSystemPrototype
     internal class EffectSystemPipelines
     {
         SortedList<int, Pipeline> Pipelines = new();
-        Dictionary<string, int> Positions = new();
+        public Dictionary<string, int> Positions { get; private set; } = new();
 
         public int Count {  get { return Pipelines.Count; } }
+        public int MaxPosition { get { return Pipelines.GetKeyAtIndex(Pipelines.Count - 1); } }
 
         public void Add(string property, Pipeline pipeline)
         {
@@ -39,6 +40,13 @@ namespace EffectSystemPrototype
             return Pipelines.Remove(position);
         }
 
+
+        public Pipeline PipelineAtPosition(int position)
+        {
+            return Pipelines[position];
+        }
+
+
         public Pipeline this[string property]
         {
             get
@@ -51,6 +59,7 @@ namespace EffectSystemPrototype
                 Add(property, value);
             }
         }
+
 
         public EffectSystemPipelines Copy()
         {
