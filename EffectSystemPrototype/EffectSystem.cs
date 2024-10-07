@@ -1,4 +1,6 @@
-﻿namespace EffectSystemPrototype;
+﻿using System.Security.Principal;
+
+namespace EffectSystemPrototype;
 
 public class EffectSystem
 {
@@ -73,10 +75,10 @@ public class EffectSystem
         }
         while (newMetaEffects.Count > 0);
 
-        foreach ((string property, int position) in _processedPipelines.Positions) // Iterates over properties in pipeline order
+        foreach ((int position, Pipeline pipeline) in _processedPipelines.Pipelines) // Iterates over properties in pipeline order
         {
-            double baseValue = _baseProperties.GetValue(property);
-            _processedProperties[property] = _processedPipelines[property].Calculate(baseValue, _inputVector);
+            double baseValue = _baseProperties.GetValue(pipeline.Property);
+            _processedProperties[pipeline.Property] = pipeline.Calculate(baseValue, _inputVector);
         }
     }
 
@@ -131,19 +133,19 @@ public class EffectSystem
         _processedPipelines = _basePipelines.Copy();
     }
 
-    private void OnPropertyAdded(string name, bool autoGenGroups)
+    private void OnPropertyAdded(string property, bool autoGenGroups)
     {
-        Pipeline pipeline = new();
-        _basePipelines[name] = pipeline;
+        Pipeline pipeline = new(property);
+        _basePipelines[property] = pipeline;
         if (autoGenGroups)
         {
-            AutoGenerateGroups(name);
+            AutoGenerateGroups(property);
         }
     }
 
-    private void OnPropertyRemoved(string name)
+    private void OnPropertyRemoved(string property)
     {
-        _basePipelines.Remove(name);
+        _basePipelines.Remove(property);
     }
 
     private void AutoGenerateGroups(string property)

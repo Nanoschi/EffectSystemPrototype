@@ -4,8 +4,14 @@ internal class Pipeline
 {
     public IPipelineGroup[] EffectGroups => GroupNames.Values.Cast<IPipelineGroup>().ToArray();
     public Dictionary<string, PipelineGroup> GroupNames { get; private set; } = new();
+    public string Property { get; private set; }
 
     public int EffectCount => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Length);
+
+    public Pipeline(string property)
+    {
+        Property = property;
+    }
 
     public double Calculate(double startValue, InputVector inputsVector)
     {
@@ -54,7 +60,7 @@ internal class Pipeline
 
     public Pipeline Copy()
     {
-        Pipeline copy = new();
+        Pipeline copy = new(Property);
         var kvpCopies = GroupNames.ToArray().Select(x => new KeyValuePair<string, PipelineGroup>(x.Key, x.Value.Copy()));
         copy.GroupNames = new Dictionary<string, PipelineGroup>(kvpCopies);
        

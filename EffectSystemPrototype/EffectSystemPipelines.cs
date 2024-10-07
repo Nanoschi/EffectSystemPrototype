@@ -8,7 +8,7 @@ namespace EffectSystemPrototype
 {
     internal class EffectSystemPipelines
     {
-        SortedList<int, Pipeline> Pipelines = new();
+        public SortedList<int, Pipeline> Pipelines { get; private set; } = new();
         public Dictionary<string, int> Positions { get; private set; } = new();
 
         public int Count {  get { return Pipelines.Count; } }
@@ -38,12 +38,6 @@ namespace EffectSystemPrototype
             int position = Positions[property];
             Positions.Remove(property);
             return Pipelines.Remove(position);
-        }
-
-
-        public Pipeline PipelineAtPosition(int position)
-        {
-            return Pipelines[position];
         }
 
 
