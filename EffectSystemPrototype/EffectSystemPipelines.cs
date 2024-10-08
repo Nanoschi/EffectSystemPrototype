@@ -14,7 +14,7 @@ namespace EffectSystemPrototype
         public int Count {  get { return Pipelines.Count; } }
         public int MaxPosition { get { return Pipelines.GetKeyAtIndex(Pipelines.Count - 1); } }
 
-        public void Add(string property, Pipeline pipeline)
+        private void AddAutoPos(string property, Pipeline pipeline)
         {
             if (Pipelines.Count > 0)
             {
@@ -27,14 +27,18 @@ namespace EffectSystemPrototype
             }
         }
 
-        public void Add(string property, Pipeline pipeline, int position)
+        public void Add(string property, Pipeline pipeline, int position = -1)
         {
             if (position < 0)
             {
-                Add(property, pipeline);
+                AddAutoPos(property, pipeline);
             }
-            Positions[property] = position;
-            Pipelines[position] = pipeline;
+            else
+            {
+                Positions[property] = position;
+                Pipelines[position] = pipeline;
+            }
+
         }
 
         public bool Remove(string property)
