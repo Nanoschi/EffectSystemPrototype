@@ -75,7 +75,7 @@ public class EffectSystem
         }
         while (newMetaEffects.Count > 0);
 
-        foreach ((int position, Pipeline pipeline) in _processedPipelines.Pipelines) // Iterates over properties in pipeline order
+        foreach ((_, Pipeline pipeline) in _processedPipelines.Pipelines) // Iterates over properties in pipeline order
         {
             double baseValue = _baseProperties.GetValue(pipeline.Property);
             _processedProperties[pipeline.Property] = pipeline.Calculate(baseValue, _inputVector);

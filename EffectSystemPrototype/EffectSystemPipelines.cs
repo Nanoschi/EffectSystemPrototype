@@ -29,6 +29,10 @@ namespace EffectSystemPrototype
 
         public void Add(string property, Pipeline pipeline, int position)
         {
+            if (position < 0)
+            {
+                Add(property, pipeline);
+            }
             Positions[property] = position;
             Pipelines[position] = pipeline;
         }
