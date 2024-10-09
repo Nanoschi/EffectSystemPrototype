@@ -13,11 +13,13 @@ public class EffectSystem
 
     public int PipelineCount => _basePipelines.Count;
 
-    public EffectSystemThresholds EffectThresholds = new ();
+    private EffectSystemThresholds _effectThresholds = new();
+    private EffectSystemPropertyRanges _propertyRanges = new();
 
     public EffectSystemProperties Properties { get => _baseProperties; }
     public EffectSystemProperties Results { get => _processedProperties; }
-    public EffectSystemThresholds Thresholds { get => EffectThresholds; }
+    public EffectSystemThresholds Thresholds { get => _effectThresholds; }
+    public EffectSystemPropertyRanges Ranges { get => _propertyRanges; }
 
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
@@ -78,7 +80,9 @@ public class EffectSystem
         foreach ((_, Pipeline pipeline) in _processedPipelines.Pipelines) // Iterates over properties in pipeline order
         {
             double baseValue = _baseProperties.GetValue(pipeline.Property);
-            _processedProperties[pipeline.Property] = pipeline.Calculate(baseValue, _inputVector);
+            double result = pipeline.Calculate(baseValue, _inputVector);
+            double clampedResult = _propertyRanges.ClampValue(pipeline.Property, result);
+            _processedProperties[pipeline.Property] = clampedResult;
         }
     }
 
@@ -141,11 +145,13 @@ public class EffectSystem
         {
             AutoGenerateGroups(property);
         }
+        _propertyRanges.Add(property);
     }
 
     private void OnPropertyRemoved(string property)
     {
         _basePipelines.Remove(property);
+        _propertyRanges.Remove(property);
     }
 
     private void AutoGenerateGroups(string property)

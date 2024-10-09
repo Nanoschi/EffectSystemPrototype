@@ -54,7 +54,7 @@ internal class Program
 
         foreach (var kv in system.Results.properties)
         {
-            Console.WriteLine($"{kv.Key} => Base: {system.Properties[kv.Key]}, Processed: {kv.Value.Value}");
+            Console.WriteLine($"{kv.Key} => Base: {system.Properties[kv.Key]}, Processed: {kv.Value}");
         }
     }
 

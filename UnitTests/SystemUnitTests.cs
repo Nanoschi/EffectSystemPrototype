@@ -201,7 +201,8 @@ namespace UnitTests
         public void PropertyMinValue()
         {
             var system = new EffectSystem();
-            system.Properties.Add("health", 100, 0, double.PositiveInfinity);
+            system.Properties.Add("health", 100);
+            system.Ranges.SetMinValue("health", 0);
 
             system.AddEffect(new ConstantEffect("health", -200, "add"));
             system.Process();
@@ -212,7 +213,8 @@ namespace UnitTests
         public void PropertyMaxValue()
         {
             var system = new EffectSystem();
-            system.Properties.Add("health", 100, double.NegativeInfinity, 200);
+            system.Properties.Add("health", 100);
+            system.Ranges.SetMaxValue("health", 200);
 
             system.AddEffect(new ConstantEffect("health", 150, "add"));
             system.Process();

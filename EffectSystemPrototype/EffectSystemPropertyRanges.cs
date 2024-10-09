@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EffectSystemPrototype
 {
-    public class EffectSystemPropertyRange
+    public class EffectSystemPropertyRanges
     {
-        Dictionary<string, (double minValue, double maxValue)> Ranges = new();
+        private Dictionary<string, (double minValue, double maxValue)> Ranges = new();
 
         public void SetMaxValue(string property, double value)
         {
