@@ -32,8 +32,8 @@ internal class Program
         };
 
 
-        system.SetInput("int", 266);
-        system.SetInput("belt", belt);
+        system.Inputs.SetValue("int", 266);
+        system.Inputs.SetValue("belt", belt);
 
         Effect[] effects = // Alle aktiven Effekte
         {

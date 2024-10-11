@@ -33,6 +33,11 @@ namespace EffectSystemPrototype
             return _inputs.Remove(name);
         }
 
+        public bool TryAddValue(string key, object value)
+        {
+            return _inputs.TryAdd(key, value);
+        }
+
         public bool TryGetValue<T>(string key, out T value)
         {
             if (_inputs.ContainsKey(key))
@@ -50,6 +55,11 @@ namespace EffectSystemPrototype
             }
             value = default;
             return false;
+        }
+
+        public void SetValue(string key, object value)
+        {
+            _inputs[key] = value;
         }
 
         public (string Name, object Value)[] Inputs => _inputs.Select(x => (x.Key, x.Value)).ToArray();

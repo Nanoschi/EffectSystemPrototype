@@ -11,14 +11,14 @@ namespace UnitTests
         public void AddRemoveInput()
         {
             var system = new EffectSystem();
-            system.SetInput("last_kill_time", 1233434234234L);
+            system.Inputs.SetValue("last_kill_time", 1233434234234L);
 
             system.InputVector.Should().HaveCount(1);
             system.InputVector.First().Should().Be(("last_kill_time", 1233434234234L));
             system.TryGetInputValue<long>("last_kill_time", out var value).Should().BeTrue();
             value.Should().Be(1233434234234L);
 
-            system.RemoveInput("last_kill_time");
+            system.Inputs.Remove("last_kill_time");
             system.TryGetInputValue<long>("last_kill_time", out var value2).Should().BeFalse();
             system.InputVector.Should().HaveCount(0);
         }
@@ -27,7 +27,7 @@ namespace UnitTests
         public void TryGetInputValue()
         {
             var system = new EffectSystem();
-            system.SetInput("last_kill_time", 1233434234234L);
+            system.Inputs.SetValue("last_kill_time", 1233434234234L);
             system.TryGetInputValue<long>("last_kill_time", out var value).Should().BeTrue();
             system.TryGetInputValue<int>("last_kill_time", out var value2).Should().BeFalse();
             system.TryGetInputValue<string>("last_kill_time", out var value3).Should().BeFalse();
@@ -112,7 +112,7 @@ namespace UnitTests
         public void InputEffects()
         {
             var system = new EffectSystem();
-            system.SetInput("intelligence", 300);
+            system.Inputs.SetValue("intelligence", 300);
 
             Func<InputVector, double> effectFunction = (input) => (int)input["intelligence"] * 0.5;
 
@@ -129,7 +129,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.SetInput("health_add", 50);
+            system.Inputs.SetValue("health_add", 50);
 
             Func<InputVector, Effect[]> metaFunction = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add")};
@@ -144,7 +144,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.SetInput("health_add", 50);
+            system.Inputs.SetValue("health_add", 50);
 
             Func<InputVector, Effect[]> metaFunction = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
@@ -163,7 +163,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.SetInput("health_add", 50);
+            system.Inputs.SetValue("health_add", 50);
 
             Func<InputVector, Effect[]> metaFunction2 = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };
@@ -182,7 +182,7 @@ namespace UnitTests
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.SetInput("health_add", 50);
+            system.Inputs.SetValue("health_add", 50);
 
             Func<InputVector, Effect[]> metaFunction2 = (inputs)
                 => new[] { new ConstantEffect("health", (double)(int)inputs["health_add"], "add") };

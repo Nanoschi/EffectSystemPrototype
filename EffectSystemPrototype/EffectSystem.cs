@@ -21,6 +21,7 @@ public class EffectSystem
     public EffectSystemThresholds Thresholds { get => _effectThresholds; }
     public EffectSystemPropertyRanges Ranges { get => _propertyRanges; }
     public EffectSystemPipelines Pipelines { get => _basePipelines; }
+    public InputVector Inputs {  get => _inputVector; }
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
     public (string Name, object Value)[] InputVector => _inputVector.Inputs.ToArray();
@@ -52,16 +53,6 @@ public class EffectSystem
         {
             _metaEffects.Add(metaEffect);
         }
-    }
-
-    public void SetInput(string name, object value)
-    {
-        _inputVector[name] = value;
-    }
-
-    public bool RemoveInput(string name)
-    {
-        return _inputVector.Remove(name);
     }
 
     public void Process()
