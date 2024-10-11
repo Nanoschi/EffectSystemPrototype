@@ -14,7 +14,9 @@
 
         public void Apply(EffectSystem system)
         {
-
+            system.Properties.Add(Name, StartValue);
+            system.Ranges.SetMinMaxValue(Name, MinValue, MaxValue);
+            
         }
     }
 }

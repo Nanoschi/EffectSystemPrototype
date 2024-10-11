@@ -27,7 +27,7 @@ namespace EffectSystemPrototype
             }
         }
 
-        public void Add(string property, Pipeline pipeline, int position = -1)
+        internal void Add(string property, Pipeline pipeline, int position = -1)
         {
             if (position < 0)
             {
@@ -41,11 +41,33 @@ namespace EffectSystemPrototype
 
         }
 
-        public bool Remove(string property)
+        internal bool Remove(string property)
         {
             int position = Positions[property];
             Positions.Remove(property);
             return Pipelines.Remove(position);
+        }
+
+        public void SetPosition(string property, int position)
+        {
+            if (Pipelines.ContainsKey(position))
+            {
+                throw new ArgumentException($"Pipeline with position '{position}' already exists.");
+            }
+            else
+            {
+                if (Positions.TryGetValue(property, out int currentPos))
+                {
+                    Positions[property] = position;
+                    var pipeline = Pipelines[position];
+                    Pipelines.Remove(currentPos);
+                    Pipelines[position] = pipeline;
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{property}' not found.");
+                }
+            }
         }
 
 
