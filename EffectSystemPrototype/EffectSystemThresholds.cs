@@ -34,7 +34,7 @@ public struct EffectThreshold
 
 public class EffectSystemThresholds
 {
-    public Dictionary<string, (LinkedList<EffectThreshold> effects, double currentValue)> Thresholds = new();
+    public Dictionary<string, (List<EffectThreshold> effects, double currentValue)> Thresholds = new();
 
     public void RemoveOutOfThreshold(EffectSystem system)
     {
@@ -52,7 +52,7 @@ public class EffectSystemThresholds
 
     public void AddEffect(Effect effect, string valueName, double threshold, LimitDirection direction)
     {
-        Thresholds[valueName].effects.AddLast(new EffectThreshold(effect, threshold, direction));
+        Thresholds[valueName].effects.Add(new EffectThreshold(effect, threshold, direction));
     }
 
     public void AddValue(string name, double startValue = 0)
