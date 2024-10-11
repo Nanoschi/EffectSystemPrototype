@@ -1,6 +1,6 @@
 ﻿namespace EffectSystemPrototype;
 
-internal delegate void PropertyAddedCallback(string name, bool autoGenGroups);
+internal delegate void PropertyAddedCallback(string name, int position, bool autoGenGroups);
 internal delegate void PropertyRemovedCallback(string name);
 
 public class EffectSystemProperties
@@ -22,7 +22,15 @@ public class EffectSystemProperties
     {
         if (properties.TryAdd(name, value))
         {
-            _propertyAdded(name, autoGenGroups);
+            _propertyAdded(name, -1, autoGenGroups);
+        }
+    }
+
+    public void Add(string name, double value, int position, bool autoGenGroups = true)
+    {
+        if (properties.TryAdd(name, value))
+        {
+            _propertyAdded(name, position, autoGenGroups);
         }
     }
 

@@ -14,12 +14,8 @@
 
         public void Apply(EffectSystem system)
         {
-            system.Properties.Add(Name, StartValue);
+            system.Properties.Add(Name, StartValue, Position);
             system.Ranges.SetMinMaxValue(Name, MinValue, MaxValue);
-            if (Position >= 0)
-            {
-                system.Pipelines.SetPosition(Name, Position);
-            }
         }
     }
 }

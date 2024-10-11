@@ -138,10 +138,11 @@ public class EffectSystem
         _processedPipelines = _basePipelines.Copy();
     }
 
-    private void OnPropertyAdded(string property, bool autoGenGroups)
+    private void OnPropertyAdded(string property, int position, bool autoGenGroups)
     {
         Pipeline pipeline = new(property);
-        _basePipelines[property] = pipeline;
+       
+        _basePipelines.Add(property, pipeline, position);
         if (autoGenGroups)
         {
             AutoGenerateGroups(property);

@@ -347,11 +347,12 @@ namespace UnitTests
             var system = new EffectSystem();
             var config2 = new PropertyConfig("health");
             config2.StartValue = 100;
-            config2.Position = 2;
+            config2.Position = 1;
             config2.Apply(system);
+
             var config1 = new PropertyConfig("strength");
             config1.StartValue = 400;
-            config1.Position = 1;
+            config1.Position = 0;
             config1.Apply(system);
 
             Func<InputVector, double> f = (inputs) =>
