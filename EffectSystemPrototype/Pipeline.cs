@@ -1,6 +1,6 @@
 ﻿namespace EffectSystemPrototype;
 
-internal class Pipeline
+public class Pipeline
 {
     public IPipelineGroup[] EffectGroups => GroupNames.Values.Cast<IPipelineGroup>().ToArray();
     public Dictionary<string, PipelineGroup> GroupNames { get; private set; } = new();

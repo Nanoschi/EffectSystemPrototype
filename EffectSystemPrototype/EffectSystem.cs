@@ -20,7 +20,7 @@ public class EffectSystem
     public EffectSystemProperties Results { get => _processedProperties; }
     public EffectSystemThresholds Thresholds { get => _effectThresholds; }
     public EffectSystemPropertyRanges Ranges { get => _propertyRanges; }
-
+    public EffectSystemPipelines Pipelines { get => _basePipelines; }
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
     public (string Name, object Value)[] InputVector => _inputVector.Inputs.ToArray();

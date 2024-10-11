@@ -303,5 +303,19 @@ namespace UnitTests
             system.Process();
             system.Results["energy_shield"].Should().Be(198);
         }
+
+        [TestMethod]
+        public void ApplyPropertyConfig()
+        {
+            var system = new EffectSystem();
+            var config = new PropertyConfig("health");
+
+            config.StartValue = 100;
+            config.MaxValue = 50;
+            config.Apply(system);
+            system.Process();
+
+            system.Results["health"].Should().Be(50);
+        }
     }
 }

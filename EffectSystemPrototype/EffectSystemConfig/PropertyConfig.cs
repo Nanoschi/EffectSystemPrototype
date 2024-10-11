@@ -16,7 +16,10 @@
         {
             system.Properties.Add(Name, StartValue);
             system.Ranges.SetMinMaxValue(Name, MinValue, MaxValue);
-            
+            if (Position >= 0)
+            {
+                system.Pipelines.SetPosition(Name, Position);
+            }
         }
     }
 }

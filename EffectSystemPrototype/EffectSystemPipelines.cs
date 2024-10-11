@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EffectSystemPrototype
 {
-    internal class EffectSystemPipelines
+    public class EffectSystemPipelines
     {
         public SortedList<int, Pipeline> Pipelines { get; private set; } = new();
         public Dictionary<string, int> Positions { get; private set; } = new();
