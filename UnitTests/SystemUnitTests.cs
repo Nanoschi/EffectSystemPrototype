@@ -1,5 +1,6 @@
 using EffectSystemPrototype;
 using FluentAssertions;
+using System.Reflection.Metadata.Ecma335;
 
 namespace UnitTests
 {
@@ -317,6 +318,52 @@ namespace UnitTests
             system.Process();
 
             system.Results["health"].Should().Be(50);
+        }
+
+        [TestMethod]
+        public void InputReadingResults()
+        {
+            var system = new EffectSystem();
+            var config1 = new PropertyConfig("strength");
+            config1.StartValue = 500;
+            config1.Apply(system);
+            var config2 = new PropertyConfig("health");
+            config2.StartValue = 100;
+            config2.Apply(system);
+
+            Func<InputVector, double> f = (inputs) =>
+                inputs.PropertyValue("strength") / 2;
+
+            var effect = new InputEffect("health", f, "add");
+            system.AddEffect(effect);
+
+            system.Process();
+            system.Results["health"].Should().Be(350);
+        }
+
+        [TestMethod]
+        public void PipelineOrder()
+        {
+            var system = new EffectSystem();
+            var config2 = new PropertyConfig("health");
+            config2.StartValue = 100;
+            config2.Position = 2;
+            config2.Apply(system);
+            var config1 = new PropertyConfig("strength");
+            config1.StartValue = 400;
+            config1.Position = 1;
+            config1.Apply(system);
+
+            Func<InputVector, double> f = (inputs) =>
+                inputs.PropertyValue("strength") / 2;
+
+            var effect1 = new InputEffect("health", f, "add");
+            var effect2 = new ConstantEffect("strength", 2, "mul");
+            system.AddEffect(effect1);
+            system.AddEffect(effect2);
+
+            system.Process();
+            system.Results["health"].Should().Be(500);
         }
     }
 }

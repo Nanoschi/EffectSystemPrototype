@@ -9,7 +9,7 @@ public class EffectSystem
     private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
     private readonly EffectSystemPipelines _basePipelines  = new();
     private EffectSystemPipelines _processedPipelines  = new();
-    private readonly InputVector _inputVector = new();
+    private readonly InputVector _inputVector;
 
     public int PipelineCount => _basePipelines.Count;
 
@@ -29,6 +29,7 @@ public class EffectSystem
     {
         _baseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
         _processedProperties = _baseProperties.Copy();
+        _inputVector = new InputVector(this);
     }
 
     public ValueEffect[] GetEffectsOfGroup(string property, string group)

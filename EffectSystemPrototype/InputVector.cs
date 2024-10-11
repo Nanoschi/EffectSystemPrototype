@@ -5,11 +5,22 @@ namespace EffectSystemPrototype
     public class InputVector
     {
         private readonly Dictionary<string, object> _inputs = new();
+        private readonly EffectSystem _effectSystem;
+
+        public InputVector(EffectSystem effectSystem)
+        {
+            _effectSystem = effectSystem;
+        }
         
         public object this[string key]
         {
             get => _inputs[key];
             set => _inputs[key] = value;
+        }
+
+        public double PropertyValue(string property)
+        {
+            return _effectSystem.Results[property];
         }
         
         public bool Contains(string key)
