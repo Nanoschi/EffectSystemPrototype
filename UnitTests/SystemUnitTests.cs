@@ -312,6 +312,7 @@ namespace UnitTests
 
             config.StartValue = 100;
             config.MaxValue = 50;
+            config.Position = 1;
             config.Apply(system);
             system.Process();
 

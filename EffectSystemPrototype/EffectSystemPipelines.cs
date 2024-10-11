@@ -59,7 +59,7 @@ namespace EffectSystemPrototype
                 if (Positions.TryGetValue(property, out int currentPos))
                 {
                     Positions[property] = position;
-                    var pipeline = Pipelines[position];
+                    var pipeline = Pipelines[currentPos];
                     Pipelines.Remove(currentPos);
                     Pipelines[position] = pipeline;
                 }
