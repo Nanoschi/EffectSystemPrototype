@@ -12,13 +12,13 @@ namespace EffectSystemPrototype
         public Dictionary<string, int> Positions { get; private set; } = new();
 
         public int Count {  get { return Pipelines.Count; } }
-        public int MaxPosition { get { return Pipelines.GetKeyAtIndex(Pipelines.Count - 1); } }
+        public int MaxPosition { get { return Pipelines.Keys[Pipelines.Count - 1]; } }
 
         private void AddAutoPos(string property, Pipeline pipeline)
         {
             if (Pipelines.Count > 0)
             {
-                int maxPos = Pipelines.GetKeyAtIndex(Pipelines.Count - 1);
+                int maxPos = Pipelines.Keys[Pipelines.Count - 1];
                 Add(property, pipeline, maxPos + 1);
             }
             else
@@ -88,7 +88,7 @@ namespace EffectSystemPrototype
         public EffectSystemPipelines Copy()
         {
             EffectSystemPipelines copy = new();
-            copy.Positions = Positions.ToDictionary();
+            copy.Positions = Positions.ToDictionary(x => x.Key, x => x.Value);
             foreach (var posPipe in Pipelines)
             {
                 copy.Pipelines[posPipe.Key] = posPipe.Value.Copy();

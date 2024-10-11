@@ -5,7 +5,9 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EffectSystemPrototype", "EffectSystemPrototype\EffectSystemPrototype.csproj", "{17E07FEB-B9BD-40A0-9EC6-E3E36F1ED89D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{34765747-57BF-4793-AC69-95B1CE4AD87E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{34765747-57BF-4793-AC69-95B1CE4AD87E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffectSystemPrototype.TestApp", "EffectSystemPrototype.TestApp\EffectSystemPrototype.TestApp.csproj", "{D6DB7737-1F93-47FE-8CC2-170C2ACF92EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{34765747-57BF-4793-AC69-95B1CE4AD87E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34765747-57BF-4793-AC69-95B1CE4AD87E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34765747-57BF-4793-AC69-95B1CE4AD87E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6DB7737-1F93-47FE-8CC2-170C2ACF92EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6DB7737-1F93-47FE-8CC2-170C2ACF92EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6DB7737-1F93-47FE-8CC2-170C2ACF92EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6DB7737-1F93-47FE-8CC2-170C2ACF92EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
