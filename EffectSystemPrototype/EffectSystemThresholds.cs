@@ -1,32 +1,46 @@
-﻿namespace EffectSystemPrototype;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public enum LimitDirection
+namespace EffectSystemPrototype;
+
+public enum RemoveCondition
 {
-    Min,
-    Max
+    Greater,
+    Smaller,
+    Equals,
+    NotEquals,
+    Func
 }
 
-public struct EffectThreshold
+internal struct EffectThreshold
 {
     public Effect Effect;
-    public double Limit;
-    public LimitDirection Direction;
+    public object Limit;
+    public RemoveCondition Condition;
 
-    public EffectThreshold(Effect effect, double limit, LimitDirection direction)
+    public EffectThreshold(Effect effect, object thresholdValue, RemoveCondition direction)
     {
         this.Effect = effect;
-        this.Limit = limit;
-        this.Direction = direction;
+        this.Limit = thresholdValue;
+        this.Condition = direction;
     }
 
-    public bool IsOutOfLimit(double currentValue)
+    public bool RemoveConditionMet(object currentValue)
     {
-        switch (Direction)
+        switch (Condition)
         {
-            case LimitDirection.Max:
-                return currentValue > Limit;
-            case LimitDirection.Min:
-                return currentValue < Limit;
+            case RemoveCondition.Smaller:
+                return Convert.ToDouble(currentValue) < Convert.ToDouble(Limit);
+            case RemoveCondition.Greater:
+                return Convert.ToDouble(currentValue) > Convert.ToDouble(Limit);
+            case RemoveCondition.Equals:
+                return Limit == currentValue;
+            case RemoveCondition.NotEquals:
+                return Limit != currentValue;
+            case RemoveCondition.Func:
+                if (Limit is Func<object, bool> comp)
+                    return comp(currentValue);
+                else
+                    throw new InvalidCastException("Limit cannot be cast to function.");
         }
         return false;
     }
@@ -34,61 +48,36 @@ public struct EffectThreshold
 
 public class EffectSystemThresholds
 {
-    public Dictionary<string, (List<EffectThreshold> effects, double currentValue)> Thresholds = new();
+    private List<(string input, EffectThreshold threshold)> Thresholds { get; set; } = new();
 
-    public void RemoveOutOfThreshold(EffectSystem system)
-    {
-        foreach (var kv in Thresholds)
-        {
-            foreach (EffectThreshold threshold in kv.Value.effects)
-            {
-                if (threshold.IsOutOfLimit(kv.Value.currentValue))
+    public int Count { get => Thresholds.Count; }
+
+    internal void RemoveOutOfThreshold(EffectSystem system, InputVector inputs)
+    { 
+        Thresholds = Thresholds.Where(
+            t => { 
+                var inputValue = inputs[t.input];
+                if (t.threshold.RemoveConditionMet(inputValue))
                 {
-                    system.RemoveEffect(threshold.Effect);
+                    system.RemoveEffect(t.threshold.Effect);
+                    return false;
                 }
-            }
-        }
+                return true; }).ToList();
     }
 
-    public void AddEffect(Effect effect, string valueName, double threshold, LimitDirection direction)
+    public void AddEffect(Effect effect, string inputName, object thresholdValue, RemoveCondition condition)
     {
-        Thresholds[valueName].effects.Add(new EffectThreshold(effect, threshold, direction));
+        if (condition == RemoveCondition.Func)
+        {
+            AddEffect(effect, inputName, (Func<object, bool>)thresholdValue);
+        }
+        EffectThreshold threshold = new(effect, thresholdValue, condition);
+        Thresholds.Add((inputName, threshold));
     }
 
-    public void AddValue(string name, double startValue = 0)
+    public void AddEffect(Effect effect, string inputName, Func<object, bool> thresholdFunction)
     {
-        if (!Thresholds.TryAdd(name, (new(), startValue)))
-        {
-            throw new ArgumentException($"Value name {name} already  exists");
-        }
-    }
-
-    public bool RemoveValue(string name)
-    {
-        return Thresholds.Remove(name);
-    }
-
-    public void SetValue(string name, double newValue)
-    {
-        if (Thresholds.TryGetValue(name, out var pair))
-        {
-            Thresholds[name] = (pair.effects, newValue);
-        }
-        else
-        {
-            throw new ArgumentException($"Value name {name} not found");
-        }
-    }
-
-    public void IncValue(string name, double delta)
-    {
-        if (Thresholds.TryGetValue(name, out var pair))
-        {
-            Thresholds[name] = (pair.effects, pair.currentValue + delta);
-        }
-        else
-        {
-            throw new ArgumentException($"Value name {name} not found");
-        }
+        EffectThreshold threshold = new(effect, thresholdFunction, RemoveCondition.Func);
+        Thresholds.Add((inputName, threshold));
     }
 }

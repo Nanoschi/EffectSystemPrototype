@@ -59,7 +59,7 @@ public class EffectSystem
     {
         var allProperties = _baseProperties.GetPropertyArray();
         _processedProperties = _baseProperties.Copy();
-        Thresholds.RemoveOutOfThreshold(this);
+        Thresholds.RemoveOutOfThreshold(this, _inputVector);
         CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
 
         var newMetaEffects = new List<MetaEffect>(MetaEffects);

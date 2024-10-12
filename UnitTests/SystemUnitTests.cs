@@ -256,32 +256,62 @@ namespace UnitTests
             system.Results["energy_shield"].Should().Be(198);
         }
 
-        [TestMethod]
-        public void AddRemoveThresholdValue()
-        {
-            var system = new EffectSystem();
-            system.Thresholds.AddValue("time");
-            system.Thresholds.Thresholds.Count.Should().Be(1);
-
-            system.Thresholds.RemoveValue("time");
-            system.Thresholds.Thresholds.Count.Should().Be(0);
-        }
 
         [TestMethod]
-        public void ApplyThreshold()
+        public void ApplyThresholdNumeric()
         {
             var system = new EffectSystem();
             system.Properties.Add("health", 100);
-            system.Thresholds.AddValue("time", 0);
             var effect = new ConstantEffect("health", 100, "add");
             system.AddEffect(effect);
-            system.Thresholds.AddEffect(effect, "time", 1, LimitDirection.Max);
 
-            system.Thresholds.IncValue("time", 0.5);
+            system.Inputs["time"] = 0;
+            system.Thresholds.AddEffect(effect, "time", 1, RemoveCondition.Greater);
+
+            system.Inputs["time"] = Convert.ToDouble(system.Inputs["time"]) + 0.5;
             system.Process();
             system.Results["health"].Should().Be(200);
 
-            system.Thresholds.IncValue("time", 1.5);
+            system.Inputs["time"] = Convert.ToDouble(system.Inputs["time"]) + 1.5;
+            system.Process();
+            system.Results["health"].Should().Be(100);
+        }
+
+        [TestMethod]
+        public void ApplyThresholdCompare()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            var effect = new ConstantEffect("health", 100, "add");
+            system.AddEffect(effect);
+
+            system.Inputs["name"] = "John";
+            system.Thresholds.AddEffect(effect, "name", "Mike", RemoveCondition.Equals);
+
+            system.Process();
+            system.Results["health"].Should().Be(200);
+
+            system.Inputs["name"] = "Mike";
+            system.Process();
+            system.Results["health"].Should().Be(100);
+        }
+
+        [TestMethod]
+        public void ApplyThresholdFunc()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            var effect = new ConstantEffect("health", 100, "add");
+            system.AddEffect(effect);
+
+            system.Inputs["name"] = "John";
+            var comp = (object value) => ((string)value).Contains('M');
+            system.Thresholds.AddEffect(effect, "name", comp);
+
+            system.Process();
+            system.Results["health"].Should().Be(200);
+
+            system.Inputs["name"] = "Mike";
             system.Process();
             system.Results["health"].Should().Be(100);
         }
