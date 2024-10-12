@@ -11,8 +11,8 @@ namespace EffectSystemPrototype
         public SortedList<int, Pipeline> Pipelines { get; private set; } = new();
         public Dictionary<string, int> Positions { get; private set; } = new();
 
-        public int Count {  get { return Pipelines.Count; } }
-        public int MaxPosition { get { return Pipelines.Keys[Pipelines.Count - 1]; } }
+        public int Count => Pipelines.Count;
+        public int MaxPosition => Pipelines.Keys[Pipelines.Count - 1];
 
         private void AddAutoPos(string property, Pipeline pipeline)
         {
@@ -78,10 +78,7 @@ namespace EffectSystemPrototype
                 int pos = Positions[property];
                 return Pipelines[pos];
             }
-            set
-            {
-                Add(property, value);
-            }
+            set => Add(property, value);
         }
 
 

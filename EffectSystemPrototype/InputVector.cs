@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-
-namespace EffectSystemPrototype
+﻿namespace EffectSystemPrototype
 {
     public class InputVector
     {

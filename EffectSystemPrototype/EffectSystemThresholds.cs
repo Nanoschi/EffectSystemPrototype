@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace EffectSystemPrototype;
+﻿namespace EffectSystemPrototype;
 
 public enum RemoveCondition
 {
@@ -50,7 +48,7 @@ public class EffectSystemThresholds
 {
     private List<(string input, EffectThreshold threshold)> Thresholds { get; set; } = new();
 
-    public int Count { get => Thresholds.Count; }
+    public int Count => Thresholds.Count;
 
     internal void RemoveOutOfThreshold(EffectSystem system, InputVector inputs)
     { 

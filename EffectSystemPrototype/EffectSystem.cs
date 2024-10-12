@@ -1,6 +1,4 @@
-﻿using System.Security.Principal;
-
-namespace EffectSystemPrototype;
+﻿namespace EffectSystemPrototype;
 
 public class EffectSystem
 {
@@ -16,12 +14,12 @@ public class EffectSystem
     private EffectSystemThresholds _effectThresholds = new();
     private EffectSystemPropertyRanges _propertyRanges = new();
 
-    public EffectSystemProperties Properties { get => _baseProperties; }
-    public EffectSystemProperties Results { get => _processedProperties; }
-    public EffectSystemThresholds Thresholds { get => _effectThresholds; }
-    public EffectSystemPropertyRanges Ranges { get => _propertyRanges; }
-    public EffectSystemPipelines Pipelines { get => _basePipelines; }
-    public InputVector Inputs {  get => _inputVector; }
+    public EffectSystemProperties Properties => _baseProperties;
+    public EffectSystemProperties Results => _processedProperties;
+    public EffectSystemThresholds Thresholds => _effectThresholds;
+    public EffectSystemPropertyRanges Ranges => _propertyRanges;
+    public EffectSystemPipelines Pipelines => _basePipelines;
+    public InputVector Inputs => _inputVector;
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
     public (string Name, object Value)[] InputVector => _inputVector.Inputs.ToArray();
