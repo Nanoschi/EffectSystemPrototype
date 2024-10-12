@@ -1,9 +1,4 @@
-﻿namespace EffectSystemPrototype;
-
-internal class FlaskBelt
-{
-    public Effect[][]? flasks;
-}
+﻿namespace EffectSystemPrototype.TestApp;
 
 
 internal class Program
@@ -11,77 +6,39 @@ internal class Program
     public static void Main()
     {
 
-        EffectSystem system = new EffectSystem();
-        system.Properties.Add("health", 100);
-        system.Properties.Add("mana", 100);
-        system.Properties.Add("speed", 1);
-        system.Properties.Add("fire_res", 0);
-        system.Properties.Add("lightning_res", 0);
-        system.Properties.Add("cold_res", 0);
-        system.Properties.Add("armour", 0);
-
-        FlaskBelt belt = new();
-        belt.flasks = new Effect[][] {
-            new Effect[] { new ConstantEffect("speed", 1.4, "mul") }, // Quicksilver
-            new Effect[] {
-                new ConstantEffect("fire_res", 0.35, "add"),
-                new ConstantEffect("lightning_res", 0.35, "add"),
-                new ConstantEffect("cold_res", 0.35, "add")
-            }, // Bismuth
-            new Effect[] { new ConstantEffect("armour", 1500, "add") }, // Granite
-        };
-
-
-        system.Inputs.SetValue("int", 266);
-        system.Inputs.SetValue("belt", belt);
-
-        Effect[] effects = // Alle aktiven Effekte
-        {
-            new ConstantEffect("health", 50, "add"),
-            new ConstantEffect("health", 2, "mul"),
-            new ConstantEffect("mana", 2, "mul"),
-            new MetaEffect(MagebloodEffect), // Fügt die Effekte der ersten drei Flasks in belt hinzu
-            new MetaEffect(IntManaEffect), // Fügt 1 Mana pro 2 int hinzu
-        };
-
-        foreach (Effect effect in effects)
-        {
-            system.AddEffect(effect);
-        }
-
-        system.RemoveEffect(effects[2]); // health * 2 Effekt wird entfernt
-        system.Process();
-
-        foreach (var kv in system.Results.properties)
-        {
-            Console.WriteLine($"{kv.Key} => Base: {system.Properties[kv.Key]}, Processed: {kv.Value}");
-        }
+        //new SomeFeaturesRunner().Run();
+        new PerformanceRunner().Run();
     }
 
-    private static Effect[] MagebloodEffect(InputVector inputsVector)
+}
+
+public class PerformanceRunner
+{
+    public void Run()
     {
-        if (inputsVector.TryGetValue<FlaskBelt>("belt", out var flaskBelt))
+        var system = new EffectSystem();
+        var amount = 100.000;
+        for (int i = 0; i < amount; i++)
         {
-            List<Effect> effects = new List<Effect>();
-            foreach (var flask in flaskBelt.flasks)
-            {
-                foreach (var effect in flask)
-                {
-                    effects.Add(effect);
-                }
-            }
-            return effects.ToArray();
+            system.CreateConfig($"Prop_{i}", i)
+                .AddGroup($"group_mul_{i}", EffectOp.Mul, EffectOp.Mul)
+                .AddGroup($"group_add_{i}", EffectOp.Mul, EffectOp.Add)
+                .AddConstantEffect(i, $"group_mul_{i}")
+                .AddConstantEffect(i, $"group_add_{i}")
+                .Add();
         }
-        return new Effect[] { };
-    }
 
-    private static Effect[] IntManaEffect(InputVector inputsVector)
-    {
-        if (inputsVector.TryGetValue<int>("int", out var intValue))
+        //for (int i = 0; i < 10; i++)
+        //{
+        //    system.Process();
+        //    var res = system.Results[$"Prop_{i}"];
+        //}
+
+        for (int i = 0; i < amount; i++)
         {
-            return new Effect[] { new ConstantEffect("mana", intValue / 2, "add") };
+            system.Process();
+            var res = system.Results[$"Prop_{i}"];
         }
-        return new Effect[] { };
-    }
 
+    }
 }
