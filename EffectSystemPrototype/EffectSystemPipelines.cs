@@ -82,15 +82,12 @@ namespace EffectSystemPrototype
         }
 
 
-        public EffectSystemPipelines Copy()
+        public void CleaGeneratedEffects()
         {
-            EffectSystemPipelines copy = new();
-            copy.Positions = Positions.ToDictionary(x => x.Key, x => x.Value);
-            foreach (var posPipe in Pipelines)
+            foreach ((_, var pipeline) in Pipelines)
             {
-                copy.Pipelines[posPipe.Key] = posPipe.Value.Copy();
+                pipeline.ClearGeneratedEffects();
             }
-            return copy;
         }
     }
 }

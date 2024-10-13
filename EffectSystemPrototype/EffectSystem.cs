@@ -6,7 +6,6 @@ public class EffectSystem
     private EffectSystemProperties _processedProperties; // Endwerte
     private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
     private readonly EffectSystemPipelines _basePipelines  = new();
-    private EffectSystemPipelines _processedPipelines  = new();
     private readonly InputVector _inputVector;
 
     public int PipelineCount => _basePipelines.Count;
@@ -31,20 +30,16 @@ public class EffectSystem
         _inputVector = new InputVector(this);
     }
 
-    public ValueEffect[] GetEffectsOfGroup(string property, string group)
+    public int GetGroupEffectCount(string property, string group)
     {
-        return _basePipelines[property].GroupNames[group].Effects.ToArray();
-    }
-    public void AddEffect(Effect effect)
-    {
-        AddEffect(effect, _basePipelines);
+        return _basePipelines[property].GroupNames[group].Count;
     }
 
-    private void AddEffect(Effect effect, EffectSystemPipelines pipelines)
+    public void AddEffect(Effect effect)
     {
         if (effect is ValueEffect valueEffect)
         {
-            pipelines[valueEffect.Property].AddEffect(valueEffect);
+            _basePipelines[valueEffect.Property].AddPermanentEffect(valueEffect);
         }
 
         if (effect is MetaEffect metaEffect)
@@ -58,7 +53,7 @@ public class EffectSystem
         var allProperties = _baseProperties.GetPropertyArray();
         _processedProperties = _baseProperties.Copy();
         Thresholds.RemoveOutOfThreshold(this, _inputVector);
-        CopyPipelinesToProcessed(); // Alle Properties und Effekte werden kopiert, damit die ursprünglichen nicht verändert werden
+        _basePipelines.CleaGeneratedEffects();
 
         var newMetaEffects = new List<MetaEffect>(MetaEffects);
         do
@@ -67,7 +62,7 @@ public class EffectSystem
         }
         while (newMetaEffects.Count > 0);
 
-        foreach ((_, Pipeline pipeline) in _processedPipelines.Pipelines) // Iterates over properties in pipeline order
+        foreach ((_, Pipeline pipeline) in _basePipelines.Pipelines) // Iterates over properties in pipeline order
         {
             double baseValue = _baseProperties.GetValue(pipeline.Property);
             double result = pipeline.Calculate(baseValue, _inputVector);
@@ -112,19 +107,13 @@ public class EffectSystem
                 {
                     newMetaEffects.Add(newMetaEffect);
                 }
-                else
+                else if (effect is ValueEffect valueEffect)
                 {
-                    AddEffect(effect, _processedPipelines);
+                    _basePipelines[valueEffect.Property].AddGeneratedEffect(valueEffect);
                 }
             }
         }
         return newMetaEffects;
-    }
-
-    private void CopyPipelinesToProcessed()
-    {
-        _processedPipelines = new();
-        _processedPipelines = _basePipelines.Copy();
     }
 
     private void OnPropertyAdded(string property, int position, bool autoGenGroups)

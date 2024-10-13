@@ -6,7 +6,7 @@ public class Pipeline
     public Dictionary<string, PipelineGroup> GroupNames { get; private set; } = new();
     public string Property { get; private set; }
 
-    public int EffectCount => EffectGroups.Aggregate(0, (acc, g) => acc + g.Effects.Length);
+    public int EffectCount => EffectGroups.Aggregate(0, (acc, g) => acc + g.Count);
 
     public Pipeline(string property)
     {
@@ -30,21 +30,20 @@ public class Pipeline
         return startValue;
     }
 
-    public void AddEffect(ValueEffect effect)
+    internal void AddPermanentEffect(ValueEffect effect)
     {
-        if (GroupNames.TryGetValue(effect.GroupName, out var group)) {
-            group.AddEffect(effect);
-        }
-        else
-        {
-            throw new ArgumentException($"Group '{effect.GroupName}' not found in pipeline");
-        }
+        GroupNames[effect.GroupName].AddPermanentEffect(effect);
+    }
+
+    internal void AddGeneratedEffect(ValueEffect effect)
+    {
+        GroupNames[effect.GroupName].AddGeneratedEffect(effect);
     }
 
     public bool RemoveEffect(ValueEffect effect)
     {
         var group = GroupNames[effect.GroupName];
-        return group.RemoveEffect(effect);
+        return group.RemovePermanentEffect(effect);
     }
 
     public void AddGroup(string name, EffectOp baseOp, EffectOp effectOp)
@@ -58,13 +57,12 @@ public class Pipeline
         return GroupNames.Remove(name);
     }
 
-    public Pipeline Copy()
+    public void ClearGeneratedEffects()
     {
-        Pipeline copy = new(Property);
-        var kvpCopies = GroupNames.ToArray().Select(x => new KeyValuePair<string, PipelineGroup>(x.Key, x.Value.Copy()));
-        copy.GroupNames = new Dictionary<string, PipelineGroup>(kvpCopies);
-       
-        return copy;
+        foreach ((_, var group) in GroupNames)
+        {
+            group.ClearGeneratedEffects();
+        }
     }
 
 

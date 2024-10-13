@@ -2,13 +2,14 @@
 
 public interface IPipelineGroup
 {
-    ValueEffect[] Effects { get; }
+    public int Count { get; }
 }
 
 public class PipelineGroup : IPipelineGroup
 {
-    private readonly List<ValueEffect> _effects = new();
-    public ValueEffect[] Effects => _effects.ToArray();
+    private readonly List<ValueEffect> PermanentEffects = new();
+    private readonly List<ValueEffect> GeneratedEffects = new();
+    public int Count => PermanentEffects.Count + GeneratedEffects.Count;
 
     public EffectOp BaseOperator;
     public EffectOp EffectOperator;
@@ -23,32 +24,32 @@ public class PipelineGroup : IPipelineGroup
     {
         if (EffectOperator == EffectOp.Add)
         {
-            return _effects.Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
+            return PermanentEffects.Concat(GeneratedEffects).Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
         }
         else if (EffectOperator == EffectOp.Mul)
         {
-            return _effects.Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
+            return PermanentEffects.Concat(GeneratedEffects).Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
         }
         return 0;
     }
 
-    public void AddEffect(ValueEffect effect)
+    internal void AddPermanentEffect(ValueEffect effect)
     {
-        _effects.Add(effect);
+        PermanentEffects.Add(effect);
     }
 
-    public bool RemoveEffect(ValueEffect effect)
+    internal void AddGeneratedEffect(ValueEffect effect)
     {
-        return _effects.Remove(effect);
+        GeneratedEffects.Add(effect);
     }
 
-    public PipelineGroup Copy()
+    internal bool RemovePermanentEffect(ValueEffect effect)
     {
-        PipelineGroup group = new(BaseOperator, EffectOperator);
-        foreach (var effect in Effects)
-        {
-            group._effects.Add(effect);
-        }
-        return group;
+        return PermanentEffects.Remove(effect);
+    }
+
+    internal void ClearGeneratedEffects()
+    {
+        GeneratedEffects.Clear();
     }
 }

@@ -58,10 +58,10 @@ namespace UnitTests
             var effect = new ConstantEffect("health", 50, "add");
             
             system.AddEffect(effect);
-            system.GetEffectsOfGroup("health", "add").Should().HaveCount(1);
+            system.GetGroupEffectCount("health", "add").Should().Be(1);
 
             system.RemoveEffect(effect);
-            system.GetEffectsOfGroup("health", "add").Should().HaveCount(0);
+            system.GetGroupEffectCount("health", "add").Should().Be(0);
         }
 
         [TestMethod]
