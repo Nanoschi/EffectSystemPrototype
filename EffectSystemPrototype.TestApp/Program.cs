@@ -34,7 +34,7 @@ public class PerformanceRunner
         }
 
         timer.Stop();
-        Console.WriteLine($"Property setup elapsed time: {timer.Elapsed.Milliseconds}ms");
+        Console.WriteLine($"Property setup elapsed time: {timer.ElapsedMilliseconds}ms");
 
         timer.Restart();
         for (int i = 0; i < processCount; i++)
@@ -42,6 +42,6 @@ public class PerformanceRunner
             system.Process();
         }
         timer.Stop();
-        Console.WriteLine($"Process elapsed time: {timer.Elapsed.Milliseconds}ms");
+        Console.WriteLine($"Process elapsed time: {timer.ElapsedMilliseconds}ms");
     }
 }
