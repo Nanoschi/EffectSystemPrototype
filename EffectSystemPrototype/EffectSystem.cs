@@ -37,6 +37,7 @@ public class EffectSystem
 
     public void AddEffect(Effect effect)
     {
+        if (effect is DataEffect)
         if (effect is ValueEffect valueEffect)
         {
             _basePipelines[valueEffect.Property].AddPermanentEffect(valueEffect);

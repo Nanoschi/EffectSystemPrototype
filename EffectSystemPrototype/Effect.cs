@@ -55,38 +55,46 @@ public class ConstantEffect : ValueEffect
 // Effekt, der eine Zahl auf Basis von input werten liefert
 public class InputEffect : ValueEffect
 {
-    public Func<InputVector, double> effectFunction;
+    public Func<InputVector, double> EffectFunction { get; set; }
     public InputEffect(string property, Func<InputVector, double> function, string opGroup) : base(property, opGroup)
     {
-        effectFunction = function;
+        EffectFunction = function;
     }
 
     public override double GetValue(InputVector inputVector)
     {
-        return effectFunction(inputVector);
+        return EffectFunction(inputVector);
     }
 }
 
-public class DataEffect : InputEffect
+public class DataEffect : ValueEffect
 {
     private Dictionary<string, object> Data { get; set; } = new();
     public Action<InputVector, Dictionary<string, object>> Constructor { get; set; } = DefaultConstructor;
     public Action<InputVector, Dictionary<string, object>> Destructor { get; set; } = DefaultDestructor;
+    public Func<InputVector, Dictionary<string, object>, double> EffectFunction { get; set; }
 
     public DataEffect(
-        string property, Func<InputVector, double> function,
+        string property,
+        Func<InputVector, Dictionary<string, object>, double> effectFunction,
         Action<InputVector, Dictionary<string, object>> constructor,
         Action<InputVector, Dictionary<string, object>> destructor,
         string opGroup) 
-        : base(property, function, opGroup)
+        : base(property, opGroup)
     {
         Constructor = constructor;
         Destructor = destructor;
+        EffectFunction = effectFunction;
     }
 
     public DataEffect(
-        string property, Func<InputVector, double> function, string opGroup)
-        : base(property, function, opGroup) { }
+        string property,
+        Func<InputVector, Dictionary<string, object>, double> effectFunction, 
+        string opGroup)
+        : base(property, opGroup)
+    {
+        EffectFunction = effectFunction;
+    }
 
     public override void OnSystemEntered(InputVector inputVector)
     {
@@ -96,6 +104,11 @@ public class DataEffect : InputEffect
     public override void OnSystemExited(InputVector inputVector)
     {
         Constructor(inputVector, Data);
+    }
+
+    public override double GetValue(InputVector inputVector)
+    {
+        return EffectFunction(inputVector, Data);
     }
 
     private static void DefaultConstructor(InputVector i, Dictionary<string, object> d) { }
