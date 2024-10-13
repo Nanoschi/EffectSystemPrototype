@@ -456,9 +456,10 @@ namespace UnitTests
 
             var effect = new DataEffect("health", f, ctor, dtor, "add");
             effect.Data.Add("start_time", 3.0);
-            system.AddTempEffect(effect);
+            system.AddEffect(effect);
 
             system.Process();
+            system.RemoveEffect(effect);
 
             system.Results["health"].Should().Be(114);
             system.Inputs["time"].Should().Be(0);

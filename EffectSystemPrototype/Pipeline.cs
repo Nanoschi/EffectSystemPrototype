@@ -40,10 +40,10 @@ public class Pipeline
         GroupNames[effect.GroupName].AddGeneratedEffect(effect);
     }
 
-    public bool RemoveEffect(ValueEffect effect)
+    public bool RemoveEffect(ValueEffect effect, InputVector inputs)
     {
         var group = GroupNames[effect.GroupName];
-        return group.RemovePermanentEffect(effect);
+        return group.RemovePermanentEffect(effect, inputs);
     }
 
     public void AddGroup(string name, EffectOp baseOp, EffectOp effectOp)

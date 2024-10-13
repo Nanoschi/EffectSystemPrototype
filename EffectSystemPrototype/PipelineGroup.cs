@@ -43,9 +43,14 @@ public class PipelineGroup : IPipelineGroup
         _generatedEffects.Add(effect);
     }
 
-    internal bool RemovePermanentEffect(ValueEffect effect)
+    internal bool RemovePermanentEffect(ValueEffect effect, InputVector inputs)
     {
-        return _permanentEffects.Remove(effect);
+        bool removed = _permanentEffects.Remove(effect);
+        if (removed)
+        {
+            effect.OnSystemExited(inputs);
+        }
+        return removed;
     }
 
     internal void ClearGeneratedEffects(InputVector inputs)

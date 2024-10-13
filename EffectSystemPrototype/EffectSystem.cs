@@ -94,11 +94,7 @@ public class EffectSystem
     private bool RemoveValueEffect(ValueEffect effect)
     {
         var pipeline = _basePipelines[effect.Property];
-        bool removed = pipeline.RemoveEffect(effect);
-        if (removed)
-        {
-            effect.OnSystemExited(_inputVector);
-        }
+        bool removed = pipeline.RemoveEffect(effect, _inputVector);
 
         return removed;
     }
