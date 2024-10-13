@@ -8,33 +8,33 @@ namespace EffectSystemPrototype
 {
     public class EffectSystemPropertyRanges
     {
-        private Dictionary<string, (double minValue, double maxValue)> Ranges = new();
+        private readonly Dictionary<string, (double minValue, double maxValue)> _ranges = new();
 
         public void SetMaxValue(string property, double value)
         {
-            var current = Ranges[property];
-            Ranges[property] = (current.minValue, value);
+            var current = _ranges[property];
+            _ranges[property] = (current.minValue, value);
         }
 
         public void SetMinValue(string property, double value)
         {
-            var current = Ranges[property];
-            Ranges[property] = (value, current.maxValue);
+            var current = _ranges[property];
+            _ranges[property] = (value, current.maxValue);
         }
 
         public void SetMinMaxValue(string property, double minValue, double maxValue)
         {
-            Ranges[property] = (minValue, maxValue);
+            _ranges[property] = (minValue, maxValue);
         }
 
         public (double min, double max) GetMinMaxValue(string property)
         {
-            return Ranges[property];
+            return _ranges[property];
         }
 
         public double ClampValue(string property, double value)
         {
-            var range = Ranges[property];
+            var range = _ranges[property];
             return Math.Clamp(value, range.minValue, range.maxValue);
         }
 
@@ -45,12 +45,12 @@ namespace EffectSystemPrototype
 
         internal void Add(string property, double min, double max)
         {
-            Ranges.Add(property, (min, max));
+            _ranges.Add(property, (min, max));
         }
 
         internal bool Remove(string property)
         {
-            return Ranges.Remove(property);
+            return _ranges.Remove(property);
         }
     }
 }

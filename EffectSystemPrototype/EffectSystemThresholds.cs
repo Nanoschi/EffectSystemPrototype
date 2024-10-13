@@ -11,15 +11,15 @@ public enum RemoveCondition
 
 internal struct EffectThreshold
 {
-    public Effect Effect;
-    public object Limit;
-    public RemoveCondition Condition;
+    public Effect Effect { get; }
+    public object Limit { get; }
+    public RemoveCondition Condition { get; }
 
     public EffectThreshold(Effect effect, object thresholdValue, RemoveCondition direction)
     {
-        this.Effect = effect;
-        this.Limit = thresholdValue;
-        this.Condition = direction;
+        Effect = effect;
+        Limit = thresholdValue;
+        Condition = direction;
     }
 
     public bool RemoveConditionMet(object currentValue)

@@ -59,7 +59,7 @@ public class Pipeline
 
     public void ClearGeneratedEffects()
     {
-        foreach ((_, var group) in GroupNames)
+        foreach (var group in GroupNames.Values)
         {
             group.ClearGeneratedEffects();
         }

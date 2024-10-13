@@ -50,10 +50,9 @@ public class EffectSystem
 
     public void Process()
     {
-        var allProperties = _baseProperties.GetPropertyArray();
         _processedProperties = _baseProperties.Copy();
         Thresholds.RemoveOutOfThreshold(this, _inputVector);
-        _basePipelines.CleaGeneratedEffects();
+        _basePipelines.ClearGeneratedEffects();
 
         var newMetaEffects = new List<MetaEffect>(MetaEffects);
         do
@@ -62,7 +61,7 @@ public class EffectSystem
         }
         while (newMetaEffects.Count > 0);
 
-        foreach ((_, Pipeline pipeline) in _basePipelines.Pipelines) // Iterates over properties in pipeline order
+        foreach (var pipeline in _basePipelines.Pipelines.Values) // Iterates over properties in pipeline order
         {
             double baseValue = _baseProperties.GetValue(pipeline.Property);
             double result = pipeline.Calculate(baseValue, _inputVector);
@@ -77,7 +76,8 @@ public class EffectSystem
         {
             return RemoveValueEffect(valueEffect);
         }
-        else if (effect is MetaEffect metaEffect)
+
+        if (effect is MetaEffect metaEffect)
         {
             return RemoveMetaEffect(metaEffect);
         }
