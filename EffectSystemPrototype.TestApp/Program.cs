@@ -1,4 +1,6 @@
-﻿namespace EffectSystemPrototype.TestApp;
+﻿using System.Diagnostics;
+
+namespace EffectSystemPrototype.TestApp;
 
 
 internal class Program
@@ -6,39 +8,40 @@ internal class Program
     public static void Main()
     {
 
-        //new SomeFeaturesRunner().Run();
-        new PerformanceRunner().Run();
+        PerformanceRunner.Run(100_000, 10);
     }
 
 }
 
 public class PerformanceRunner
 {
-    public void Run()
+    public static void Run(int propertyCount, int effectCount, int processCount = 1)
     {
         var system = new EffectSystem();
-        var amount = 100.000;
-        for (int i = 0; i < amount; i++)
+
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
+
+        for (int i = 0; i < propertyCount; i++)
         {
-            system.CreateConfig($"Prop_{i}", i)
-                .AddGroup($"group_mul_{i}", EffectOp.Mul, EffectOp.Mul)
-                .AddGroup($"group_add_{i}", EffectOp.Mul, EffectOp.Add)
-                .AddConstantEffect(i, $"group_mul_{i}")
-                .AddConstantEffect(i, $"group_add_{i}")
-                .Add();
+            system.Properties.Add($"prop_{i}", 0);
+
+            for (int j = 0; j <  effectCount; j++)
+            {
+                var effect = new ConstantEffect($"prop_{i}", 1, "add");
+                system.AddEffect(effect);
+            }
         }
 
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    system.Process();
-        //    var res = system.Results[$"Prop_{i}"];
-        //}
+        timer.Stop();
+        Console.WriteLine($"Property setup elapsed time: {timer.Elapsed.Milliseconds}ms");
 
-        for (int i = 0; i < amount; i++)
+        timer.Restart();
+        for (int i = 0; i < processCount; i++)
         {
             system.Process();
-            var res = system.Results[$"Prop_{i}"];
         }
-
+        timer.Stop();
+        Console.WriteLine($"Process elapsed time: {timer.Elapsed.Milliseconds}ms");
     }
 }

@@ -35,7 +35,7 @@ public class EffectSystem
     {
         return _basePipelines[property].GroupNames[group].Effects.ToArray();
     }
-    public void AddEffect(Effect effect, double duration = 0)
+    public void AddEffect(Effect effect)
     {
         AddEffect(effect, _basePipelines);
     }
