@@ -410,5 +410,57 @@ namespace UnitTests
             system.Process();
             system.Results["health"].Should().Be(100);
         }
+
+        [TestMethod]
+        public void DataEffectFunction()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            system.Inputs.TryAddValue("time", 10.0);
+
+            Func<InputVector, Dictionary<string, object>, double> f = (inputs, data) =>
+            {
+                return ((double)inputs["time"] - (double)data["start_time"]) * 2.0;
+            };
+
+            var effect = new DataEffect("health", f, "add");
+            effect.Data.Add("start_time", 3.0);
+            system.AddEffect(effect);
+
+            system.Process();
+
+            system.Results["health"].Should().Be(114);
+        }
+
+        public void DataEffectCtorDtor()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            system.Inputs.TryAddValue("time", 10.0);
+
+            Func<InputVector, Dictionary<string, object>, double> f = (inputs, data) =>
+            {
+                return ((double)inputs["time"] - (double)data["start_time"]) * 2.0;
+            };
+
+            Action<InputVector, Dictionary<string, object>> ctor = (inputs, data) =>
+            {
+                data["start_time"] = 3.0;
+            };
+
+            Action<InputVector, Dictionary<string, object>> dtor = (inputs, data) =>
+            {
+                inputs["time"] = 0.0;
+            };
+
+            var effect = new DataEffect("health", f, ctor, dtor, "add");
+            effect.Data.Add("start_time", 3.0);
+            system.AddEffect(effect);
+
+            system.Process();
+
+            system.Results["health"].Should().Be(114);
+            system.Inputs["time"].Should().Be(0);
+        }
     }
 }

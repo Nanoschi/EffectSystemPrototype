@@ -69,7 +69,7 @@ public class InputEffect : ValueEffect
 
 public class DataEffect : ValueEffect
 {
-    private Dictionary<string, object> Data { get; set; } = new();
+    public Dictionary<string, object> Data { get; set; } = new();
     public Action<InputVector, Dictionary<string, object>> Constructor { get; set; } = DefaultConstructor;
     public Action<InputVector, Dictionary<string, object>> Destructor { get; set; } = DefaultDestructor;
     public Func<InputVector, Dictionary<string, object>, double> EffectFunction { get; set; }

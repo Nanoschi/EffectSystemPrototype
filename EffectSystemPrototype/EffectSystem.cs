@@ -37,9 +37,9 @@ public class EffectSystem
 
     public void AddEffect(Effect effect)
     {
-        if (effect is DataEffect)
         if (effect is ValueEffect valueEffect)
         {
+            valueEffect.OnSystemEntered(_inputVector);
             _basePipelines[valueEffect.Property].AddPermanentEffect(valueEffect);
         }
 
@@ -51,6 +51,7 @@ public class EffectSystem
 
     public void AddTempEffect(ValueEffect effect)
     {
+        effect.OnSystemEntered(_inputVector);
         _basePipelines[effect.Property].AddGeneratedEffect(effect);
     }
 
@@ -80,7 +81,7 @@ public class EffectSystem
     {
         if (effect is ValueEffect valueEffect)
         {
-            return RemoveValueEffect(valueEffect);
+            RemoveValueEffect(valueEffect);
         }
 
         if (effect is MetaEffect metaEffect)
@@ -93,7 +94,13 @@ public class EffectSystem
     private bool RemoveValueEffect(ValueEffect effect)
     {
         var pipeline = _basePipelines[effect.Property];
-        return pipeline.RemoveEffect(effect);
+        bool removed = pipeline.RemoveEffect(effect);
+        if (removed)
+        {
+            effect.OnSystemExited(_inputVector);
+        }
+
+        return removed;
     }
 
     private bool RemoveMetaEffect(MetaEffect effect)
