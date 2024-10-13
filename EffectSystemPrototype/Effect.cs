@@ -30,7 +30,9 @@ public abstract class ValueEffect : Effect
         GroupName = group;
     }
 
-    public abstract double GetValue(InputVector inputsVector);
+    public abstract double GetValue(InputVector inputVector);
+    public virtual void OnSystemEntered(InputVector inputVector) { }
+    public virtual void OnSystemExited(InputVector inputVector) { }
 
 }
 
@@ -44,7 +46,7 @@ public class ConstantEffect : ValueEffect
         this.Value = value;
     }
 
-    public override double GetValue(InputVector inputsVector)
+    public override double GetValue(InputVector inputVector)
     {
         return Value;
     }
@@ -59,10 +61,45 @@ public class InputEffect : ValueEffect
         effectFunction = function;
     }
 
-    public override double GetValue(InputVector inputsVector)
+    public override double GetValue(InputVector inputVector)
     {
-        return effectFunction(inputsVector);
+        return effectFunction(inputVector);
     }
+}
+
+public class DataEffect : InputEffect
+{
+    private Dictionary<string, object> Data { get; set; } = new();
+    public Action<InputVector, Dictionary<string, object>> Constructor { get; set; } = DefaultConstructor;
+    public Action<InputVector, Dictionary<string, object>> Destructor { get; set; } = DefaultDestructor;
+
+    public DataEffect(
+        string property, Func<InputVector, double> function,
+        Action<InputVector, Dictionary<string, object>> constructor,
+        Action<InputVector, Dictionary<string, object>> destructor,
+        string opGroup) 
+        : base(property, function, opGroup)
+    {
+        Constructor = constructor;
+        Destructor = destructor;
+    }
+
+    public DataEffect(
+        string property, Func<InputVector, double> function, string opGroup)
+        : base(property, function, opGroup) { }
+
+    public override void OnSystemEntered(InputVector inputVector)
+    {
+        Constructor(inputVector, Data);
+    }
+
+    public override void OnSystemExited(InputVector inputVector)
+    {
+        Constructor(inputVector, Data);
+    }
+
+    private static void DefaultConstructor(InputVector i, Dictionary<string, object> d) { }
+    private static void DefaultDestructor(InputVector i, Dictionary<string, object> d) { }
 }
 
 // Effekt, der andere Effekte erzeugt
