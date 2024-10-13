@@ -74,7 +74,7 @@ public class EffectSystem
             double clampedResult = _propertyRanges.ClampValue(pipeline.Property, result);
             _processedProperties[pipeline.Property] = clampedResult;
         }
-        _basePipelines.ClearGeneratedEffects();
+        _basePipelines.ClearGeneratedEffects(_inputVector);
     }
 
     public bool RemoveEffect(Effect effect)

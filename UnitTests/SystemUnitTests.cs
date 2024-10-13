@@ -432,6 +432,7 @@ namespace UnitTests
             system.Results["health"].Should().Be(114);
         }
 
+        [TestMethod]
         public void DataEffectCtorDtor()
         {
             var system = new EffectSystem();
@@ -455,7 +456,7 @@ namespace UnitTests
 
             var effect = new DataEffect("health", f, ctor, dtor, "add");
             effect.Data.Add("start_time", 3.0);
-            system.AddEffect(effect);
+            system.AddTempEffect(effect);
 
             system.Process();
 

@@ -57,11 +57,11 @@ public class Pipeline
         return GroupNames.Remove(name);
     }
 
-    public void ClearGeneratedEffects()
+    public void ClearGeneratedEffects(InputVector inputs)
     {
         foreach (var group in GroupNames.Values)
         {
-            group.ClearGeneratedEffects();
+            group.ClearGeneratedEffects(inputs);
         }
     }
 

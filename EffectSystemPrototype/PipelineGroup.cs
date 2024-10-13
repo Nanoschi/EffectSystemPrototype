@@ -48,8 +48,12 @@ public class PipelineGroup : IPipelineGroup
         return _permanentEffects.Remove(effect);
     }
 
-    internal void ClearGeneratedEffects()
+    internal void ClearGeneratedEffects(InputVector inputs)
     {
+        foreach (ValueEffect effect in _generatedEffects)
+        {
+            effect.OnSystemExited(inputs);
+        }
         _generatedEffects.Clear();
     }
 }

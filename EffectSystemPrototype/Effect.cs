@@ -103,7 +103,7 @@ public class DataEffect : ValueEffect
 
     internal override void OnSystemExited(InputVector inputVector)
     {
-        Constructor(inputVector, Data);
+        Destructor(inputVector, Data);
     }
 
     public override double GetValue(InputVector inputVector)
