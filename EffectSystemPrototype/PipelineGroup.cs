@@ -7,13 +7,13 @@ public interface IPipelineGroup
 
 public class PipelineGroup : IPipelineGroup
 {
-    private readonly List<ValueEffect> PermanentEffects = new();
-    private readonly List<ValueEffect> GeneratedEffects = new();
-    public int Count => PermanentEffects.Count + GeneratedEffects.Count;
+    private readonly List<ValueEffect> _permanentEffects = new();
+    private readonly List<ValueEffect> _generatedEffects = new();
+    public int Count => _permanentEffects.Count + _generatedEffects.Count;
 
-    public EffectOp BaseOperator;
-    public EffectOp EffectOperator;
-    
+    public EffectOp BaseOperator { get; }
+    public EffectOp EffectOperator { get; }
+
     public PipelineGroup(EffectOp baseOp, EffectOp effectOp)
     {
         BaseOperator = baseOp;
@@ -24,32 +24,32 @@ public class PipelineGroup : IPipelineGroup
     {
         if (EffectOperator == EffectOp.Add)
         {
-            return PermanentEffects.Concat(GeneratedEffects).Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
+            return _permanentEffects.Concat(_generatedEffects).Aggregate(0.0, (acc, e) => acc + e.GetValue(inputsVector));
         }
         else if (EffectOperator == EffectOp.Mul)
         {
-            return PermanentEffects.Concat(GeneratedEffects).Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
+            return _permanentEffects.Concat(_generatedEffects).Aggregate(1.0, (acc, e) => acc * e.GetValue(inputsVector));
         }
         return 0;
     }
 
     internal void AddPermanentEffect(ValueEffect effect)
     {
-        PermanentEffects.Add(effect);
+        _permanentEffects.Add(effect);
     }
 
     internal void AddGeneratedEffect(ValueEffect effect)
     {
-        GeneratedEffects.Add(effect);
+        _generatedEffects.Add(effect);
     }
 
     internal bool RemovePermanentEffect(ValueEffect effect)
     {
-        return PermanentEffects.Remove(effect);
+        return _permanentEffects.Remove(effect);
     }
 
     internal void ClearGeneratedEffects()
     {
-        GeneratedEffects.Clear();
+        _generatedEffects.Clear();
     }
 }

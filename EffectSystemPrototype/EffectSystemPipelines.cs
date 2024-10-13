@@ -8,8 +8,8 @@ namespace EffectSystemPrototype
 {
     public class EffectSystemPipelines
     {
-        public SortedList<int, Pipeline> Pipelines { get; private set; } = new();
-        public Dictionary<string, int> Positions { get; private set; } = new();
+        public SortedList<int, Pipeline> Pipelines { get; } = new();
+        public Dictionary<string, int> Positions { get; } = new();
 
         public int Count => Pipelines.Count;
         public int MaxPosition => Pipelines.Keys[Pipelines.Count - 1];
@@ -82,9 +82,9 @@ namespace EffectSystemPrototype
         }
 
 
-        public void CleaGeneratedEffects()
+        public void ClearGeneratedEffects()
         {
-            foreach ((_, var pipeline) in Pipelines)
+            foreach (var pipeline in Pipelines.Values)
             {
                 pipeline.ClearGeneratedEffects();
             }
