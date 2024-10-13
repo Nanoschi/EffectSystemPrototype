@@ -31,8 +31,8 @@ public abstract class ValueEffect : Effect
     }
 
     public abstract double GetValue(InputVector inputVector);
-    public virtual void OnSystemEntered(InputVector inputVector) { }
-    public virtual void OnSystemExited(InputVector inputVector) { }
+    internal virtual void OnSystemEntered(InputVector inputVector) { }
+    internal virtual void OnSystemExited(InputVector inputVector) { }
 
 }
 
@@ -96,12 +96,12 @@ public class DataEffect : ValueEffect
         EffectFunction = effectFunction;
     }
 
-    public override void OnSystemEntered(InputVector inputVector)
+    internal override void OnSystemEntered(InputVector inputVector)
     {
         Constructor(inputVector, Data);
     }
 
-    public override void OnSystemExited(InputVector inputVector)
+    internal override void OnSystemExited(InputVector inputVector)
     {
         Constructor(inputVector, Data);
     }
