@@ -122,7 +122,7 @@ public class EffectSystem
                 }
                 else if (effect is ValueEffect valueEffect)
                 {
-                    _basePipelines[valueEffect.Property].AddGeneratedEffect(valueEffect);
+                    AddTempEffect(valueEffect);
                 }
             }
         }
