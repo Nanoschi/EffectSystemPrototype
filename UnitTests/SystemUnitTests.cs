@@ -396,5 +396,19 @@ namespace UnitTests
             system.Process();
             system.Results["health"].Should().Be(500);
         }
+
+        [TestMethod]
+        public void TemporaryEffects()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            system.AddTempEffect(new ConstantEffect("health", 50, "add"));
+
+            system.Process();
+            system.Results["health"].Should().Be(150);
+
+            system.Process();
+            system.Results["health"].Should().Be(100);
+        }
     }
 }

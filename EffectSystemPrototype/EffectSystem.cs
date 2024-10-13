@@ -48,11 +48,15 @@ public class EffectSystem
         }
     }
 
+    public void AddTempEffect(ValueEffect effect)
+    {
+        _basePipelines[effect.Property].AddGeneratedEffect(effect);
+    }
+
     public void Process()
     {
         _processedProperties = _baseProperties.Copy();
         Thresholds.RemoveOutOfThreshold(this, _inputVector);
-        _basePipelines.ClearGeneratedEffects();
 
         var newMetaEffects = new List<MetaEffect>(MetaEffects);
         do
@@ -68,6 +72,7 @@ public class EffectSystem
             double clampedResult = _propertyRanges.ClampValue(pipeline.Property, result);
             _processedProperties[pipeline.Property] = clampedResult;
         }
+        _basePipelines.ClearGeneratedEffects();
     }
 
     public bool RemoveEffect(Effect effect)
