@@ -35,9 +35,9 @@ public class Pipeline
         GroupNames[effect.GroupName].AddPermanentEffect(effect);
     }
 
-    internal void AddGeneratedEffect(ValueEffect effect)
+    internal void AddTemporaryEffect(ValueEffect effect)
     {
-        GroupNames[effect.GroupName].AddGeneratedEffect(effect);
+        GroupNames[effect.GroupName].AddTemporaryEffect(effect);
     }
 
     public bool RemoveEffect(ValueEffect effect, InputVector inputs)
@@ -57,11 +57,11 @@ public class Pipeline
         return GroupNames.Remove(name);
     }
 
-    public void ClearGeneratedEffects(InputVector inputs)
+    public void ClearTemporaryEffects(InputVector inputs)
     {
         foreach (var group in GroupNames.Values)
         {
-            group.ClearGeneratedEffects(inputs);
+            group.ClearTemporaryEffects(inputs);
         }
     }
 

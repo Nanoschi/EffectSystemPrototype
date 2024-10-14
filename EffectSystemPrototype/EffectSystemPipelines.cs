@@ -82,11 +82,11 @@ namespace EffectSystemPrototype
         }
 
 
-        public void ClearGeneratedEffects(InputVector inputs)
+        public void ClearTemporaryEffects(InputVector inputs)
         {
             foreach (var pipeline in Pipelines.Values)
             {
-                pipeline.ClearGeneratedEffects(inputs);
+                pipeline.ClearTemporaryEffects(inputs);
             }
         }
     }

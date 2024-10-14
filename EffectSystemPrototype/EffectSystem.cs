@@ -52,7 +52,7 @@ public class EffectSystem
     public void AddTempEffect(ValueEffect effect)
     {
         effect.OnSystemEntered(_inputVector);
-        _basePipelines[effect.Property].AddGeneratedEffect(effect);
+        _basePipelines[effect.Property].AddTemporaryEffect(effect);
     }
 
     public void Process()
@@ -74,7 +74,7 @@ public class EffectSystem
             double clampedResult = _propertyRanges.ClampValue(pipeline.Property, result);
             _processedProperties[pipeline.Property] = clampedResult;
         }
-        _basePipelines.ClearGeneratedEffects(_inputVector);
+        _basePipelines.ClearTemporaryEffects(_inputVector);
     }
 
     public bool RemoveEffect(Effect effect)
