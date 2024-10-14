@@ -8,7 +8,7 @@ internal class Program
     public static void Main()
     {
         //new SomeFeaturesRunner().Run();
-        PerformanceRunner.Run(100_000, 10);
+        PerformanceRunner.Run(100, 5, 1000);
     }
 
 }
@@ -37,11 +37,12 @@ public class PerformanceRunner
         Console.WriteLine($"Property setup elapsed time: {timer.ElapsedMilliseconds}ms");
 
         timer.Restart();
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < processCount; i++)
         {
             system.Process();
         }
         timer.Stop();
         Console.WriteLine($"Process elapsed time: {timer.ElapsedMilliseconds}ms");
+        Console.WriteLine($"Timer per Process: {timer.ElapsedMilliseconds / (double)processCount}ms");
     }
 }
