@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace EffectSystemPrototype
 {
-    public class EffectSystemPipelines
+    public class Pipelines
     {
-        public SortedList<int, Pipeline> Pipelines { get; } = new();
+        public SortedList<int, Pipeline> PipelinesList { get; } = new();
         public Dictionary<string, int> Positions { get; } = new();
 
-        public int Count => Pipelines.Count;
-        public int MaxPosition => Pipelines.Keys[Pipelines.Count - 1];
+        public int Count => PipelinesList.Count;
+        public int MaxPosition => PipelinesList.Keys[PipelinesList.Count - 1];
 
         private void AddAutoPos(string property, Pipeline pipeline)
         {
-            if (Pipelines.Count > 0)
+            if (PipelinesList.Count > 0)
             {
-                int maxPos = Pipelines.Keys[Pipelines.Count - 1];
+                int maxPos = PipelinesList.Keys[PipelinesList.Count - 1];
                 Add(property, pipeline, maxPos + 1);
             }
             else
@@ -36,7 +36,7 @@ namespace EffectSystemPrototype
             else
             {
                 Positions[property] = position;
-                Pipelines[position] = pipeline;
+                PipelinesList[position] = pipeline;
             }
 
         }
@@ -45,12 +45,12 @@ namespace EffectSystemPrototype
         {
             int position = Positions[property];
             Positions.Remove(property);
-            return Pipelines.Remove(position);
+            return PipelinesList.Remove(position);
         }
 
         public void SetPosition(string property, int position)
         {
-            if (Pipelines.ContainsKey(position))
+            if (PipelinesList.ContainsKey(position))
             {
                 throw new ArgumentException($"Pipeline with position '{position}' already exists.");
             }
@@ -59,9 +59,9 @@ namespace EffectSystemPrototype
                 if (Positions.TryGetValue(property, out int currentPos))
                 {
                     Positions[property] = position;
-                    var pipeline = Pipelines[currentPos];
-                    Pipelines.Remove(currentPos);
-                    Pipelines[position] = pipeline;
+                    var pipeline = PipelinesList[currentPos];
+                    PipelinesList.Remove(currentPos);
+                    PipelinesList[position] = pipeline;
                 }
                 else
                 {
@@ -76,7 +76,7 @@ namespace EffectSystemPrototype
             get
             {
                 int pos = Positions[property];
-                return Pipelines[pos];
+                return PipelinesList[pos];
             }
             set => Add(property, value);
         }
@@ -84,7 +84,7 @@ namespace EffectSystemPrototype
 
         public void ClearTemporaryEffects(InputVector inputs)
         {
-            foreach (var pipeline in Pipelines.Values)
+            foreach (var pipeline in PipelinesList.Values)
             {
                 pipeline.ClearTemporaryEffects(inputs);
             }

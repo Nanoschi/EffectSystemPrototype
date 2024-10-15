@@ -2,22 +2,22 @@
 
 public class EffectSystem
 {
-    private readonly EffectSystemProperties _baseProperties;
-    private EffectSystemProperties _processedProperties;
+    private readonly Properties _baseProperties;
+    private Properties _processedProperties;
     private readonly List<MetaEffect> _metaEffects = new();
-    private readonly EffectSystemPipelines _basePipelines  = new();
+    private readonly Pipelines _basePipelines  = new();
     private readonly InputVector _inputVector;
 
     public int PipelineCount => _basePipelines.Count;
 
-    private EffectSystemThresholds _effectThresholds = new();
-    private EffectSystemPropertyRanges _propertyRanges = new();
+    private Thresholds _effectThresholds = new();
+    private PropertyRanges _propertyRanges = new();
 
-    public EffectSystemProperties Properties => _baseProperties;
-    public EffectSystemProperties Results => _processedProperties;
-    public EffectSystemThresholds Thresholds => _effectThresholds;
-    public EffectSystemPropertyRanges Ranges => _propertyRanges;
-    public EffectSystemPipelines Pipelines => _basePipelines;
+    public Properties Properties => _baseProperties;
+    public Properties Results => _processedProperties;
+    public Thresholds Thresholds => _effectThresholds;
+    public PropertyRanges Ranges => _propertyRanges;
+    public Pipelines Pipelines => _basePipelines;
     public InputVector Inputs => _inputVector;
     public MetaEffect[] MetaEffects => _metaEffects.ToArray();
 
@@ -25,7 +25,7 @@ public class EffectSystem
 
     public EffectSystem()
     {
-        _baseProperties = new EffectSystemProperties(OnPropertyAdded, OnPropertyRemoved);
+        _baseProperties = new Properties(OnPropertyAdded, OnPropertyRemoved);
         _processedProperties = _baseProperties.Copy();
         _inputVector = new InputVector(this);
     }
@@ -67,7 +67,7 @@ public class EffectSystem
         }
         while (newMetaEffects.Count > 0);
 
-        foreach (var pipeline in _basePipelines.Pipelines.Values) // Iterates over properties in pipeline order
+        foreach (var pipeline in _basePipelines.PipelinesList.Values) // Iterates over properties in pipeline order
         {
             double baseValue = _baseProperties.GetValue(pipeline.Property);
             double result = pipeline.Calculate(baseValue, _inputVector);

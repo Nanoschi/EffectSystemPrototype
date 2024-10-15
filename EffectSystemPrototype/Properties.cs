@@ -1,17 +1,17 @@
 ﻿namespace EffectSystemPrototype;
 
-public class EffectSystemProperties
+public class Properties
 {
-    internal Dictionary<string, double> Properties { get; private set; } = new();
+    internal Dictionary<string, double> Values { get; private set; } = new();
     internal List<string> PermanentProperties { get; private set; } = new();
 
     private readonly Action<string, int, bool> _propertyAdded;
     private readonly Action<string> _propertyRemoved;
 
-    public int Count => Properties.Count;
-    public string[] PropertyNames => Properties.Keys.ToArray();
+    public int Count => Values.Count;
+    public string[] PropertyNames => Values.Keys.ToArray();
 
-    internal EffectSystemProperties(Action<string, int, bool> propertyAdded, Action<string> propertyRemoved)
+    internal Properties(Action<string, int, bool> propertyAdded, Action<string> propertyRemoved)
     {
         this._propertyAdded = propertyAdded;
         this._propertyRemoved = propertyRemoved;
@@ -19,7 +19,7 @@ public class EffectSystemProperties
 
     public void Add(string name, double value, bool permanent = false, bool autoGenGroups = true)
     {
-        if (Properties.TryAdd(name, value))
+        if (Values.TryAdd(name, value))
         {
             _propertyAdded(name, -1, autoGenGroups);
         }
@@ -27,7 +27,7 @@ public class EffectSystemProperties
 
     public void Add(string name, double value, int position, bool permanent = false, bool autoGenGroups = true)
     {
-        if (Properties.TryAdd(name, value))
+        if (Values.TryAdd(name, value))
         {
             _propertyAdded(name, position, autoGenGroups);
         }
@@ -35,7 +35,7 @@ public class EffectSystemProperties
 
     public void Remove(string name)
     {
-        if (Properties.Remove(name))
+        if (Values.Remove(name))
         {
             _propertyRemoved(name);
         }
@@ -43,17 +43,17 @@ public class EffectSystemProperties
 
     public bool Contains(string name)
     {
-        return Properties.ContainsKey(name);
+        return Values.ContainsKey(name);
     }
 
     public void SetValue(string name, double value)
     {
-        Properties[name] = value;
+        Values[name] = value;
     }
 
     public double GetValue(string name)
     {
-        return Properties[name];
+        return Values[name];
     }
 
     public void MakePermanent(string property)
@@ -73,7 +73,7 @@ public class EffectSystemProperties
 
     public string[] GetPropertyArray()
     {
-        return Properties.Keys.ToArray();
+        return Values.Keys.ToArray();
     }
     public double this[string property]
     {
@@ -81,12 +81,12 @@ public class EffectSystemProperties
         set => SetValue(property, value);
     }
 
-    internal EffectSystemProperties Copy()
+    internal Properties Copy()
     {
-        EffectSystemProperties copy = new(_propertyAdded, _propertyRemoved);
-        foreach (var property in Properties)
+        Properties copy = new(_propertyAdded, _propertyRemoved);
+        foreach (var property in Values)
         {
-            copy.Properties[property.Key] = property.Value; 
+            copy.Values[property.Key] = property.Value; 
         }
         return copy;
     }

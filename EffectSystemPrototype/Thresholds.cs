@@ -44,15 +44,15 @@ internal struct EffectThreshold
     }
 }
 
-public class EffectSystemThresholds
+public class Thresholds
 {
-    private List<(string input, EffectThreshold threshold)> Thresholds { get; set; } = new();
+    private List<(string input, EffectThreshold threshold)> ThresholdsList { get; set; } = new();
 
-    public int Count => Thresholds.Count;
+    public int Count => ThresholdsList.Count;
 
     internal void RemoveOutOfThreshold(EffectSystem system, InputVector inputs)
     { 
-        Thresholds = Thresholds.Where(
+        ThresholdsList = ThresholdsList.Where(
             t => { 
                 var inputValue = inputs[t.input];
                 if (t.threshold.RemoveConditionMet(inputValue))
@@ -70,12 +70,12 @@ public class EffectSystemThresholds
             AddEffect(effect, inputName, (Func<object, bool>)thresholdValue);
         }
         EffectThreshold threshold = new(effect, thresholdValue, condition);
-        Thresholds.Add((inputName, threshold));
+        ThresholdsList.Add((inputName, threshold));
     }
 
     public void AddEffect(Effect effect, string inputName, Func<object, bool> thresholdFunction)
     {
         EffectThreshold threshold = new(effect, thresholdFunction, RemoveCondition.Func);
-        Thresholds.Add((inputName, threshold));
+        ThresholdsList.Add((inputName, threshold));
     }
 }
