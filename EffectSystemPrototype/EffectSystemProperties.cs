@@ -3,21 +3,10 @@
 internal delegate void PropertyAddedCallback(string name, int position, bool autoGenGroups);
 internal delegate void PropertyRemovedCallback(string name);
 
-internal struct PropertyData
-{
-    internal double Value { get; set; }
-    internal bool IsPermanent { get; set; }
-
-    internal PropertyData(double value, bool isPermanent)
-    {
-        Value = value;
-        IsPermanent = isPermanent;
-    }
-}
-
 public class EffectSystemProperties
 {
-    internal Dictionary<string, PropertyData> Properties { get; private set; } = new();
+    internal Dictionary<string, double> Properties { get; private set; } = new();
+    internal List<string> PermanentProperties { get; private set; } = new();
 
     private readonly PropertyAddedCallback _propertyAdded;
     private readonly PropertyRemovedCallback _propertyRemoved;
@@ -33,7 +22,7 @@ public class EffectSystemProperties
 
     public void Add(string name, double value, bool permanent = false, bool autoGenGroups = true)
     {
-        if (Properties.TryAdd(name, new(value, permanent)))
+        if (Properties.TryAdd(name, value))
         {
             _propertyAdded(name, -1, autoGenGroups);
         }
@@ -41,7 +30,7 @@ public class EffectSystemProperties
 
     public void Add(string name, double value, int position, bool permanent = false, bool autoGenGroups = true)
     {
-        if (Properties.TryAdd(name, new(value, permanent)))
+        if (Properties.TryAdd(name, value))
         {
             _propertyAdded(name, position, autoGenGroups);
         }
@@ -62,18 +51,37 @@ public class EffectSystemProperties
 
     public void SetValue(string name, double value)
     {
-        PropertyData current = Properties[name];
-        Properties[name] = new(value, current.IsPermanent);
+        Properties[name] = value;
     }
 
     public double GetValue(string name)
     {
-        return Properties[name].Value;
+        return Properties[name];
+    }
+
+    public void MakePermanent(string property)
+    {
+        PermanentProperties.Add(property);
+    }
+
+    public bool RemovePermanent(string property)
+    {
+        return PermanentProperties.Remove(property);
+    }
+
+    public bool IsPermanent(string property)
+    {
+        return PermanentProperties.Contains(property);
     }
 
     public string[] GetPropertyArray()
     {
         return Properties.Keys.ToArray();
+    }
+    public double this[string property]
+    {
+        get => GetValue(property);
+        set => SetValue(property, value);
     }
 
     internal EffectSystemProperties Copy()
@@ -86,10 +94,5 @@ public class EffectSystemProperties
         return copy;
     }
 
-    public double this[string name]
-    {
-        get => Properties[name].Value;
-        set => SetValue(name, value);
-    }
 
 }

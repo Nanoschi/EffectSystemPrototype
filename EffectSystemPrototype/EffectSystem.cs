@@ -2,9 +2,9 @@
 
 public class EffectSystem
 {
-    private readonly EffectSystemProperties _baseProperties; // Basiswerte
-    private EffectSystemProperties _processedProperties; // Endwerte
-    private readonly List<MetaEffect> _metaEffects = new(); // Effekte, die Effekte erzeugen
+    private readonly EffectSystemProperties _baseProperties;
+    private EffectSystemProperties _processedProperties;
+    private readonly List<MetaEffect> _metaEffects = new();
     private readonly EffectSystemPipelines _basePipelines  = new();
     private readonly InputVector _inputVector;
 
@@ -63,7 +63,7 @@ public class EffectSystem
         var newMetaEffects = new List<MetaEffect>(MetaEffects);
         do
         {
-            newMetaEffects =  ApplyMetaEffects(newMetaEffects); // Gibt Meta Effekte zurück, die von Meta effekten erzeugt wurden
+            newMetaEffects = ApplyMetaEffects(newMetaEffects);
         }
         while (newMetaEffects.Count > 0);
 
