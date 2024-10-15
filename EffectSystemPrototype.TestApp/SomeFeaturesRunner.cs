@@ -50,9 +50,9 @@ public class SomeFeaturesRunner
         system.RemoveEffect(effects[2]); // health * 2 Effekt wird entfernt
         system.Process();
 
-        foreach (var kv in system.Results.properties)
+        foreach (var name in system.Results.PropertyNames)
         {
-            Console.WriteLine($"{kv.Key} => Base: {system.Properties[kv.Key]}, Processed: {kv.Value}");
+            Console.WriteLine($"{name} => Base: {system.Properties[name]}, Processed: {system.Results[name]}");
         }
     }
 

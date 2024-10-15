@@ -3,14 +3,27 @@
 internal delegate void PropertyAddedCallback(string name, int position, bool autoGenGroups);
 internal delegate void PropertyRemovedCallback(string name);
 
+internal struct PropertyData
+{
+    internal double Value { get; set; }
+    internal bool IsPermanent { get; set; }
+
+    internal PropertyData(double value, bool isPermanent)
+    {
+        Value = value;
+        IsPermanent = isPermanent;
+    }
+}
+
 public class EffectSystemProperties
 {
-    public Dictionary<string, double> properties = new();
+    internal Dictionary<string, PropertyData> Properties { get; private set; } = new();
 
     private readonly PropertyAddedCallback _propertyAdded;
     private readonly PropertyRemovedCallback _propertyRemoved;
 
-    public int Count => properties.Count;
+    public int Count => Properties.Count;
+    public string[] PropertyNames => Properties.Keys.ToArray();
 
     internal EffectSystemProperties(PropertyAddedCallback propertyAdded, PropertyRemovedCallback propertyRemoved)
     {
@@ -18,17 +31,17 @@ public class EffectSystemProperties
         this._propertyRemoved = propertyRemoved;
     }
 
-    public void Add(string name, double value, bool autoGenGroups = true)
+    public void Add(string name, double value, bool permanent = false, bool autoGenGroups = true)
     {
-        if (properties.TryAdd(name, value))
+        if (Properties.TryAdd(name, new(value, permanent)))
         {
             _propertyAdded(name, -1, autoGenGroups);
         }
     }
 
-    public void Add(string name, double value, int position, bool autoGenGroups = true)
+    public void Add(string name, double value, int position, bool permanent = false, bool autoGenGroups = true)
     {
-        if (properties.TryAdd(name, value))
+        if (Properties.TryAdd(name, new(value, permanent)))
         {
             _propertyAdded(name, position, autoGenGroups);
         }
@@ -36,7 +49,7 @@ public class EffectSystemProperties
 
     public void Remove(string name)
     {
-        if (properties.Remove(name))
+        if (Properties.Remove(name))
         {
             _propertyRemoved(name);
         }
@@ -44,36 +57,38 @@ public class EffectSystemProperties
 
     public bool Contains(string name)
     {
-        return properties.ContainsKey(name);
+        return Properties.ContainsKey(name);
     }
 
     public void SetValue(string name, double value)
     {
-        properties[name] = value;
+        PropertyData current = Properties[name];
+        Properties[name] = new(value, current.IsPermanent);
     }
 
     public double GetValue(string name)
     {
-        return properties[name];
+        return Properties[name].Value;
     }
 
     public string[] GetPropertyArray()
     {
-        return properties.Keys.ToArray();
+        return Properties.Keys.ToArray();
     }
+
     internal EffectSystemProperties Copy()
     {
         EffectSystemProperties copy = new(_propertyAdded, _propertyRemoved);
-        foreach (var property in properties)
+        foreach (var property in Properties)
         {
-            copy.properties[property.Key] = property.Value; 
+            copy.Properties[property.Key] = property.Value; 
         }
         return copy;
     }
 
     public double this[string name]
     {
-        get => properties[name];
+        get => Properties[name].Value;
         set => SetValue(name, value);
     }
 

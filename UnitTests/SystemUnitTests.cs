@@ -226,7 +226,7 @@ namespace UnitTests
         public void AddRemovePipelineGroup()
         {
             var system = new EffectSystem();
-            system.Properties.Add("health", 100, false);
+            system.Properties.Add("health", 100, false, false);
 
             system.AddGroup("health","group", EffectOp.Add, EffectOp.Add);
             system.GetGroups("health").Length.Should().Be(1);
