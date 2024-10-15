@@ -1,20 +1,17 @@
 ﻿namespace EffectSystemPrototype;
 
-internal delegate void PropertyAddedCallback(string name, int position, bool autoGenGroups);
-internal delegate void PropertyRemovedCallback(string name);
-
 public class EffectSystemProperties
 {
     internal Dictionary<string, double> Properties { get; private set; } = new();
     internal List<string> PermanentProperties { get; private set; } = new();
 
-    private readonly PropertyAddedCallback _propertyAdded;
-    private readonly PropertyRemovedCallback _propertyRemoved;
+    private readonly Action<string, int, bool> _propertyAdded;
+    private readonly Action<string> _propertyRemoved;
 
     public int Count => Properties.Count;
     public string[] PropertyNames => Properties.Keys.ToArray();
 
-    internal EffectSystemProperties(PropertyAddedCallback propertyAdded, PropertyRemovedCallback propertyRemoved)
+    internal EffectSystemProperties(Action<string, int, bool> propertyAdded, Action<string> propertyRemoved)
     {
         this._propertyAdded = propertyAdded;
         this._propertyRemoved = propertyRemoved;
