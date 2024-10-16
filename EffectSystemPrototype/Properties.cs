@@ -75,6 +75,7 @@ public class Properties
     {
         return Values.Keys.ToArray();
     }
+
     public double this[string property]
     {
         get => GetValue(property);
@@ -88,6 +89,7 @@ public class Properties
         {
             copy.Values[property.Key] = property.Value; 
         }
+        copy.PermanentProperties = PermanentProperties;
         return copy;
     }
 

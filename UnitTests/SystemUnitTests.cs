@@ -464,5 +464,52 @@ namespace UnitTests
             system.Results["health"].Should().Be(114);
             system.Inputs["time"].Should().Be(0);
         }
+
+        [TestMethod]
+        public void AddPermanentProperty()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 0, true);
+            system.Properties.MakePermanent("health");
+
+            var effect = new ConstantEffect("health", 50, "add");
+
+            system.AddEffect(effect);
+            system.Process();
+            system.Results["health"].Should().Be(50);
+
+            system.RemoveEffect(effect);
+            system.Process();
+            system.Results["health"].Should().Be(50);
+        }
+
+        [TestMethod]
+        public void RemovePermanentProperty()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 0, true);
+
+            var effect1 = new ConstantEffect("health", 50, "add");
+            var effect2 = new ConstantEffect("health", -100, "add");
+
+            system.Properties.MakePermanent("health");
+            system.AddEffect(effect1);
+            system.Process();
+            system.Results["health"].Should().Be(50);
+
+            system.RemoveEffect(effect1);
+            system.Process();
+            system.Results["health"].Should().Be(50);
+
+            system.Properties.RemovePermanent("health");
+            system.AddEffect(effect2);
+            system.Process();
+            system.Results["health"].Should().Be(-50);
+
+            system.RemoveEffect(effect2);
+
+            system.Process();
+            system.Results["health"].Should().Be(50);
+        }
     }
 }

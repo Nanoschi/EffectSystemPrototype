@@ -1,4 +1,6 @@
-﻿namespace EffectSystemPrototype;
+﻿using System.Runtime.ExceptionServices;
+
+namespace EffectSystemPrototype;
 
 public class EffectSystem
 {
@@ -57,6 +59,7 @@ public class EffectSystem
 
     public void Process()
     {
+        SavePermanentProperties();
         _processedProperties = _baseProperties.Copy();
         Thresholds.RemoveOutOfThreshold(this, _inputVector);
 
@@ -89,6 +92,17 @@ public class EffectSystem
             return RemoveMetaEffect(metaEffect);
         }
         return false;
+    }
+
+    private void SavePermanentProperties()
+    {
+        foreach (string property in Results.PermanentProperties)
+        {
+            if (Results.Contains(property)) // ignore properties that haven't been copied to results yet
+            {
+                Properties[property] = Results[property];
+            }
+        }
     }
 
     private bool RemoveValueEffect(ValueEffect effect)
