@@ -7,6 +7,7 @@
         public double MinValue { get; set; } = double.NegativeInfinity;
         public double MaxValue { get; set; } = double.PositiveInfinity;
         public int Position { get; set; } = -1;
+        public bool IsPermanent { get; set;} = false;
         public PropertyConfig(string name)
         {
             Name = name;
@@ -16,6 +17,10 @@
         {
             system.Properties.Add(Name, StartValue, Position);
             system.Ranges.SetMinMaxValue(Name, MinValue, MaxValue);
+            if (IsPermanent)
+            {
+                system.Properties.MakePermanent(Name);
+            }
         }
     }
 }
