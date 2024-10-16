@@ -17,7 +17,7 @@ public class Properties
         this._propertyRemoved = propertyRemoved;
     }
 
-    public void Add(string name, double value, bool permanent = false, bool autoGenGroups = true)
+    public void Add(string name, double value, bool autoGenGroups = true)
     {
         if (Values.TryAdd(name, value))
         {
@@ -25,7 +25,7 @@ public class Properties
         }
     }
 
-    public void Add(string name, double value, int position, bool permanent = false, bool autoGenGroups = true)
+    public void Add(string name, double value, int position, bool autoGenGroups = true)
     {
         if (Values.TryAdd(name, value))
         {
