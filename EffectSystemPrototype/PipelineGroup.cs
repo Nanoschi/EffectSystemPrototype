@@ -33,6 +33,11 @@ public class PipelineGroup : IPipelineGroup
         return 0;
     }
 
+    public bool ContainsEffect(ValueEffect effect)
+    {
+        return _permanentEffects.Contains(effect) || _temporaryEffects.Contains(effect);
+    }
+
     internal void AddPermanentEffect(ValueEffect effect)
     {
         _permanentEffects.Add(effect);

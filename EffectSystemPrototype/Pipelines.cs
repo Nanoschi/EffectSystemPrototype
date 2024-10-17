@@ -70,6 +70,12 @@ namespace EffectSystemPrototype
             }
         }
 
+        public bool ContainsEffect(ValueEffect effect)
+        {
+            int position = Positions[effect.Property];
+            return PipelinesList[position].ContainsEffect(effect);
+        }
+
 
         public Pipeline this[string property]
         {

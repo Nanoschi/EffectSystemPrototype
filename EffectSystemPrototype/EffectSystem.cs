@@ -57,6 +57,19 @@ public class EffectSystem
         _basePipelines[effect.Property].AddTemporaryEffect(effect);
     }
 
+    public bool ContainsEffect(Effect effect)
+    {
+        if (effect is ValueEffect valueEffect)
+        {
+            return _basePipelines.ContainsEffect(valueEffect);
+        }
+        else if (effect is MetaEffect metaEffect)
+        {
+            return MetaEffects.Contains(metaEffect);
+        }
+        return false;
+    }
+
     public void Process()
     {
         SavePermanentProperties();

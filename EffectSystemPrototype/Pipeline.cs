@@ -46,6 +46,11 @@ public class Pipeline
         return group.RemovePermanentEffect(effect, inputs);
     }
 
+    public bool ContainsEffect(ValueEffect effect)
+    {
+        return GroupNames[effect.GroupName].ContainsEffect(effect);
+    }
+
     public void AddGroup(string name, EffectOp baseOp, EffectOp effectOp)
     {
         PipelineGroup newGroup = new(baseOp, effectOp);

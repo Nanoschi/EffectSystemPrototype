@@ -511,5 +511,17 @@ namespace UnitTests
             system.Process();
             system.Results["health"].Should().Be(50);
         }
+
+        [TestMethod]
+        public void ContainsEffect()
+        {
+            var system = new EffectSystem();
+            system.Properties.Add("health", 100);
+            var effect = new ConstantEffect("health", 50, "add");
+            system.AddEffect(effect);
+            system.ContainsEffect(effect).Should().BeTrue();
+            system.RemoveEffect(effect);
+            system.ContainsEffect(effect).Should().BeFalse();
+        }
     }
 }
